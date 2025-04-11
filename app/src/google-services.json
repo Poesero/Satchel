@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "926064833874",
+    "project_id": "satchel-book-sharing",
+    "storage_bucket": "satchel-book-sharing.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926064833874:android:d7e71305fa7632744eb68b",
+        "android_client_info": {
+          "package_name": "com.example.satchelbooksharing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBU-fwfsc9wzI5wDOqOYvZFBXq-fjno3-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
