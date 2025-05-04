@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -39,6 +40,12 @@ fun Header (title: String) {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun HeaderPreview() {
+    Header(title="String")
+}
+
 @Composable
 fun Footer (){
     Surface(
@@ -58,4 +65,10 @@ fun Footer (){
             Text("Hecho con 💙", fontSize = 14.sp)
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FooterPreview() {
+    Footer()
 }
