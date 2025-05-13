@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
 
@@ -27,7 +28,7 @@ fun HomeScreen() {
             Text("Contenido principal en algun momento")
         }
         
-        Footer()
+        Footer(navController = rememberNavController(), currentDestination = "home")
     }
 }
 

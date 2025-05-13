@@ -26,9 +26,11 @@ fun SplashScreen(navController: NavController, viewModel: MainViewModel = viewMo
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when {
             state == null -> {
-                Text("Cargando...")
-                Spacer(modifier = Modifier.height(16.dp))
-                CircularProgressIndicator()
+                Column {
+                    Text("Cargando...")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    CircularProgressIndicator()
+                }
             }
             state?.isUserLoggedIn == true -> {
                 LaunchedEffect(Unit) {
