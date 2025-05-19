@@ -12,14 +12,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,17 +82,17 @@ fun Footer (
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment  = Alignment.CenterVertically
         ) {
-            AppButton(onClick = {navController.navigate("home") }) {
+            AppButton(onClick = {navController.navigate("library") }) {
+                Icon(Icons.AutoMirrored.Filled.List, contentDescription = null)
+                Text("Biblioteca")
+            }
+            AppButton(onClick = {navController.navigate("home")}) {
                 Icon(Icons.Default.Home, contentDescription = null)
                 Text("Inicio")
             }
-            AppButton(onClick = {navController.navigate("profile")}) {
-                Icon(Icons.Default.Person, contentDescription = null)
-                Text("perfil")
-            }
-            AppButton(onClick = {navController.navigate("profile")}) {
-                Icon(Icons.Default.Person, contentDescription = null)
-                Text("perfil2")
+            AppButton(onClick = {navController.navigate("search")}) {
+                Icon(Icons.Default.Search, contentDescription = null)
+                Text("Buscar")
             }
             /*
             Text("© Satchel 2025", fontSize = 14.sp)
@@ -119,6 +127,29 @@ fun AppButton (
     ) {
         content()
     }
+}
+
+@Composable
+fun SearchField() {
+    var text by remember { mutableStateOf(TextFieldValue("")) }
+    return OutlinedTextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp),
+        value = text,
+        leadingIcon = { Icon(imageVector = Icons.Default.Search,
+            contentDescription = "searchIcon") },
+        onValueChange = {
+            text = it
+        },
+        placeholder = { Text (text = "Que libro estamos buscando?") }
+    )
+}
+
+@Preview (showBackground = true)
+@Composable
+fun SearchPreview(){
+    SearchField()
 }
 
 
