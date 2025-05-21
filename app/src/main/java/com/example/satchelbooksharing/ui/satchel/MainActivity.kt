@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,8 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.ui.satchel.navigation.SatchelNavGraph
+import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,11 +34,23 @@ class MainActivity : ComponentActivity() {
             SatchelTheme {
                 Surface(modifier = Modifier.fillMaxSize()){
                     val navController = rememberNavController()
-                    SatchelNavGraph(navController = navController)
+                    SatchelRoot(navController = navController)
                 }
             }
         }
     }
+}
+
+@Composable
+fun SatchelRoot(navController: NavHostController){
+    Scaffold(
+        bottomBar = {
+            Footer(navController = navController)
+        }
+    ){ _ ->
+        SatchelNavGraph(navController = navController)
+    }
+
 }
 
 @Preview

@@ -26,7 +26,7 @@ fun HomeScreen() {
             Text("Contenido principal en algun momento")
         }
         
-        Footer(navController = rememberNavController(), currentDestination = "home")
+        Footer(navController = rememberNavController())
     }
 }
 
