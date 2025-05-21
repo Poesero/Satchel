@@ -32,7 +32,7 @@ fun SearchScreen() {
             Text("Contenido principal en el futuro")
         }
 
-        Footer(navController = rememberNavController(), currentDestination = "search")
+        Footer(navController = rememberNavController())
 
     }
 

@@ -27,7 +27,7 @@ fun ProfileScreen() {
             Text("Contenido principal en algun momento")
         }
 
-        Footer(navController = rememberNavController(), currentDestination = "profile")
+        Footer(navController = rememberNavController())
     }
 
 }
