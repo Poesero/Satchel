@@ -42,24 +42,31 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SatchelRoot(navController: NavHostController){
+fun SatchelRoot(navController: NavHostController) {
+    val showFooter = remember { mutableStateOf(true) }
+
     Scaffold(
         bottomBar = {
-            Footer(navController = navController)
+            if (showFooter.value) {
+                Footer(navController = navController)
+            }
         }
-    ){ _ ->
-        SatchelNavGraph(navController = navController)
+    ) { _->
+        SatchelNavGraph(
+            navController = navController,
+            showFooter = showFooter
+        )
     }
-
 }
 
 @Preview
 @Composable
-fun PreviewMain(){
+fun PreviewMain() {
     SatchelTheme {
         Surface {
             val navController = rememberNavController()
-            SatchelNavGraph(navController = navController)
+            val showFooter = remember { mutableStateOf(true) }
+            SatchelNavGraph(navController = navController, showFooter = showFooter)
         }
     }
 }
