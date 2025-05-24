@@ -1,5 +1,6 @@
 package com.example.satchelbooksharing.ui.satchel.sharedElements
 
+import com.example.satchelbooksharing.model.satchel.Book
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,9 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import com.example.satchelbooksharing.R
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.testing.TestNavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelTheme
 
 @Composable
@@ -182,32 +184,47 @@ fun SatchelBodyContainer(
 }
 
 @Composable
-fun BookCard(){
+fun BookCard(book: Book){
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Card(modifier = Modifier
-            .width(50.dp)
-            .height(80.dp),
+            .width(200.dp)
+            .height(260.dp),
             elevation = CardDefaults.cardElevation(7.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.DarkGray
             )
         ) {
             Column (modifier = Modifier.fillMaxSize()){
-                Image(painter = painterResource(id = R.drawable.empty_image), contentDescription = "null")
-                Text(text = "<Title...>",
+                val painter = rememberAsyncImagePainter(
+                    model = book.imageUri ?: R.drawable.empty_image
+                )
+                Image(painter = painter,
+                    contentDescription = "null",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    contentScale = ContentScale.Crop
+                )
+                Text(text = book.title,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(6.dp),
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .padding(top = 6.dp),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
+
                 )
 
-                Text(text = "Author...",
+                Text(text = book.author,
                     fontSize = 13.sp,
                     color = Color.LightGray,
-                    modifier = Modifier.padding(2.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .padding(top = 2.dp)
                 )
             }
         }
@@ -217,8 +234,10 @@ fun BookCard(){
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewBookCard(){
-    BookCard()
+fun PreviewBookCard() {
+    val exampleBook = Book()
+    BookCard(book = exampleBook)
+
 }
 
 

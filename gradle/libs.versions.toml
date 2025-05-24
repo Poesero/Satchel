@@ -1,4 +1,5 @@
 [versions]
+coil = "2.4.0"
 firebase-bom = "33.1.2"
 google-services = "4.4.2"
 agp = "8.9.2"
@@ -14,6 +15,7 @@ navigationRuntimeKtx = "2.8.9"
 navigationTestingAndroid = "2.9.0"
 
 [libraries]
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 firebaseBom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

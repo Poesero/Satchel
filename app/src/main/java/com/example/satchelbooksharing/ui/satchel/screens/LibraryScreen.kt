@@ -9,50 +9,54 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.satchelbooksharing.model.satchel.Book
+import com.example.satchelbooksharing.ui.satchel.sharedElements.BookCard
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyContainer
 
 @Composable
-fun LibraryScreen(navController: NavHostController) {
-    Column (
+fun LibraryScreen() {
+
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
         Header(title = "Library")
 
-        Column (
+        Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(24.dp, vertical = 12.dp)
         ) {
-            SatchelBodyContainer {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    horizontalArrangement = Arrangement.spacedBy(3.dp)
-                ) {
-                    item{
-                        AddBookButton()
-                    }
-
-                    items(books.size) { index ->
-                    BookCard(
-                        title = books[index],
-                        author = "Autor ${index + 1}",
-                        imageProvided = false
-                    )
-                    }
-                }
-            }
+//            SatchelBodyContainer {
+//                LazyVerticalGrid(
+//                    columns = GridCells.Fixed(3),
+//                    modifier = Modifier.fillMaxSize(),
+//                    contentPadding = PaddingValues(8.dp),
+//                    verticalArrangement = Arrangement.spacedBy(3.dp),
+//                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+//                ) {
+//                    item {
+//                        AddBookButton()
+//                    }
+//                    items() { index ->
+//                        BookCard(book = Book("Harry Potter", "J. K. Rowling", null))
+//
+//                    }
+//
+//
+//                }
+//
+//
+//            }
         }
-
 
 
     }
