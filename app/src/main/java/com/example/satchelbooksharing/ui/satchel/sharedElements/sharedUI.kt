@@ -45,6 +45,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.testing.TestNavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelTheme
+/*
+@Composable
+fun TestUi(){
+    Column {
+        Header("Header")
+        SatchelBodyContainer()
+        Footer()
+    }
+}
+ */
 
 @Composable
 fun Header (title: String) {

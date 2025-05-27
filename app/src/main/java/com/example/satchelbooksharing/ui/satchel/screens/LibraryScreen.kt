@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.satchelbooksharing.model.satchel.Book
@@ -22,11 +23,9 @@ import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyConta
 @Composable
 fun LibraryScreen() {
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
         Header(title = "Library")
 
@@ -34,30 +33,36 @@ fun LibraryScreen() {
             modifier = Modifier
                 .weight(1f)
                 .padding(24.dp, vertical = 12.dp)
-        ) {
-//            SatchelBodyContainer {
-//                LazyVerticalGrid(
-//                    columns = GridCells.Fixed(3),
-//                    modifier = Modifier.fillMaxSize(),
-//                    contentPadding = PaddingValues(8.dp),
-//                    verticalArrangement = Arrangement.spacedBy(3.dp),
-//                    horizontalArrangement = Arrangement.spacedBy(3.dp)
-//                ) {
-//                    item {
-//                        AddBookButton()
-//                    }
-//                    items() { index ->
-//                        BookCard(book = Book("Harry Potter", "J. K. Rowling", null))
-//
-//                    }
-//
-//
-//                }
-//
-//
-//            }
+        ) { SatchelBodyContainer {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    item {
+                        //FaLta agregar una pantalla dedicada al ABM de los libros
+                        //AddBookButton()
+                    }
+                    items(1) { index ->
+                        BookCard(book = Book("Harry Potter", "J. K. Rowling", null))
+
+                    }
+
+
+                }
+
+
+            }
         }
 
 
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LibraryPreview(){
+    LibraryScreen()
 }
