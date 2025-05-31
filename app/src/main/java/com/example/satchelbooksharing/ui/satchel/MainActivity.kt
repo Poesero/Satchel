@@ -22,7 +22,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.satchelbooksharing.ui.satchel.navigation.SatchelNavGraph
+import com.example.satchelbooksharing.ui.satchel.navigation.SatchelNav
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelTheme
 
@@ -33,8 +33,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SatchelTheme {
                 Surface(modifier = Modifier.fillMaxSize()){
-                    val navController = rememberNavController()
-                    SatchelRoot(navController = navController)
+                    SatchelNav()
                 }
             }
         }
@@ -44,7 +43,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun SatchelRoot(navController: NavHostController) {
     val showFooter = remember { mutableStateOf(true) }
-
+/*
     Scaffold(
         bottomBar = {
             if (showFooter.value) {
@@ -57,11 +56,14 @@ fun SatchelRoot(navController: NavHostController) {
             showFooter = showFooter
         )
     }
+
+ */
 }
 
 @Preview
 @Composable
 fun PreviewMain() {
+    /*
     SatchelTheme {
         Surface {
             val navController = rememberNavController()
@@ -69,6 +71,8 @@ fun PreviewMain() {
             SatchelNavGraph(navController = navController, showFooter = showFooter)
         }
     }
+
+     */
 }
 
 

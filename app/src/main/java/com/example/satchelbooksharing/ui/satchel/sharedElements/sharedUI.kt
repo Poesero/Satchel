@@ -41,9 +41,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.testing.TestNavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelTheme
 /*
 @Composable
@@ -86,7 +88,7 @@ fun HeaderPreview() {
 }
 
 @Composable
-fun Footer (navController: NavHostController) {
+fun Footer (navController: NavController) {
     Surface(
         tonalElevation = 4.dp,
         modifier = Modifier
@@ -100,15 +102,15 @@ fun Footer (navController: NavHostController) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment  = Alignment.CenterVertically
         ) {
-            AppButton(onClick = {navController.navigate("library") }) {
+            AppButton(onClick = {navController.navigate(ScreensRoute.ScreenLibraryRoute.route)}) {
                 Icon(Icons.AutoMirrored.Filled.List, contentDescription = null)
                 Text("Biblioteca")
             }
-            AppButton(onClick = {navController.navigate("home")}) {
+            AppButton(onClick = {navController.navigate(ScreensRoute.ScreenHomeRoute.route)}) {
                 Icon(Icons.Default.Home, contentDescription = null)
                 Text("Inicio")
             }
-            AppButton(onClick = {navController.navigate("search")}) {
+            AppButton(onClick = {navController.navigate(ScreensRoute.ScreenSearchRoute.route)}) {
                 Icon(Icons.Default.Search, contentDescription = null)
                 Text("Buscar")
             }
@@ -184,12 +186,15 @@ fun SatchelBodyContainer(
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
     ) {
+        /* Reemplazar con LazyColum
         Column (
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize(),
             content = content
         )
+
+         */
     }
 }
 

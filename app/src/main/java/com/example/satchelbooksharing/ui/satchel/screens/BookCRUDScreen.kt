@@ -1,10 +1,14 @@
 package com.example.satchelbooksharing.ui.satchel.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -14,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
@@ -35,23 +40,34 @@ fun BookCRUDScreen() {
         var descriptionValue by remember{
             mutableStateOf("")
         }
-        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+                    .padding(13.dp)
+                    //.background(color = Color.Green)
+                    .padding(2.dp, vertical = 10.dp)) {
+
             TextField(value = titleValue, onValueChange = {
                 titleValue = it
             },
-                label = { Text(text = "title")}
+                label = { Text(text = "title")},
+                singleLine = true
             )
 
             TextField(value = authorValue, onValueChange = {
                 authorValue = it
             },
-                label = { Text(text = "author")}
+                label = { Text(text = "author")},
+                singleLine = true
             )
 
             TextField(value = descriptionValue, onValueChange = {
                 descriptionValue = it
             },
-                label = { Text(text = "description")}
+                label = { Text(text = "description")},
+                maxLines = 4,
+                modifier = Modifier.height(100.dp)
+
             )
 
         }

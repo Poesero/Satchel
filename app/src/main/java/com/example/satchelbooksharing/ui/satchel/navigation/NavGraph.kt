@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.ui.satchel.screens.BookScreen
 import com.example.satchelbooksharing.ui.satchel.screens.ChatScreen
 import com.example.satchelbooksharing.ui.satchel.screens.HomeScreen
@@ -14,12 +15,17 @@ import com.example.satchelbooksharing.ui.satchel.screens.SearchScreen
 import com.example.satchelbooksharing.ui.satchel.screens.SplashScreen
 
 @Composable
-fun SatchelNavGraph(navController: NavHostController,
-                    showFooter: MutableState<Boolean>) {
+fun SatchelNav() {
+    val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = ScreensRoute.AuthRoute.route
     ){
+
+        authGraph(navController)
+        appGraph(navController)
+
+        /*
         composable("splash"){
             showFooter.value = false
             SplashScreen(navController)
@@ -45,5 +51,7 @@ fun SatchelNavGraph(navController: NavHostController,
         composable("Chat"){
             ChatScreen()
         }
+
+         */
     }
 }

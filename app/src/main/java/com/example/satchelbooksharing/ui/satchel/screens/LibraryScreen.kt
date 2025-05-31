@@ -13,7 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.ui.satchel.sharedElements.BookCard
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
@@ -21,7 +23,7 @@ import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyContainer
 
 @Composable
-fun LibraryScreen() {
+fun LibraryScreen(navController: NavController) {
 
     Column(
         modifier = Modifier
@@ -50,19 +52,17 @@ fun LibraryScreen() {
 
                     }
 
-
                 }
 
-
             }
+
         }
 
-
+        Footer(navController)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun LibraryPreview(){
-    LibraryScreen()
 }

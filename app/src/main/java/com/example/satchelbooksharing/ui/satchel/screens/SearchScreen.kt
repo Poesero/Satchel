@@ -8,13 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SearchField
 
 @Composable
-fun SearchScreen() {
+fun SearchScreen(navController: NavController) {
 
     //Header must have a search bar where the user type the title of the book
     Column (
@@ -32,7 +33,7 @@ fun SearchScreen() {
             Text("Contenido principal en el futuro")
         }
 
-        Footer(navController = rememberNavController())
+        Footer(navController)
 
     }
 
@@ -42,5 +43,5 @@ fun SearchScreen() {
 @Preview (showBackground = true)
 @Composable
 fun SearchScreenPreview(){
-    SearchScreen()
+
 }
