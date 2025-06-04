@@ -17,7 +17,7 @@ fun ProfileScreen(navController: NavController) {
     Column (
         modifier = Modifier.fillMaxSize()
     ) {
-        Header(title = "the Profile screen this is")
+        Header(navController = navController)
 
         Column(
             modifier = Modifier
@@ -25,7 +25,7 @@ fun ProfileScreen(navController: NavController) {
                 .padding(24.dp)
         ) {
             //Contenido principal en algun momento
-            Text("Contenido principal en algun momento")
+            Text("Contenido perfil")
         }
 
         Footer(navController = rememberNavController())

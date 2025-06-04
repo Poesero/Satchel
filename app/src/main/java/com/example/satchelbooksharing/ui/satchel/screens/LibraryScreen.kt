@@ -29,7 +29,7 @@ fun LibraryScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        Header(title = "Library")
+        Header(navController = navController)
 
         Column(
             modifier = Modifier

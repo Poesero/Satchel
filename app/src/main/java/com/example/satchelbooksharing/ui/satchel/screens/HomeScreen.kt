@@ -16,7 +16,7 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier) {
     Column (
         modifier = Modifier.fillMaxSize()
     ) {
-        Header(title = "the Home screen this is")
+        Header(navController = navController)
 
         Column(
             modifier = Modifier

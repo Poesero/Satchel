@@ -1,5 +1,6 @@
 package com.example.satchelbooksharing.ui.satchel.sharedElements
 
+import android.service.autofill.OnClickAction
 import com.example.satchelbooksharing.model.satchel.Book
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,7 +22,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import androidx.navigation.testing.TestNavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
@@ -59,24 +65,30 @@ fun TestUi(){
  */
 
 @Composable
-fun Header (title: String) {
+fun Header (navController: NavController) {
     Surface(
+
         tonalElevation = 4.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(60.dp)
     ) {
-        Box(
-            contentAlignment = Alignment.CenterStart,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
+        Row (modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = Color.Cyan,
+                shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp), ),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = title,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
+            AppButton(onClick = {navController.navigate(ScreensRoute.ScreenProfileRoute.route)}) {
+                Icon(Icons.Default.Person, contentDescription = null)
+
+            }
+            AppButton(onClick = {navController.navigate(ScreensRoute.ScreenLibraryRoute.route)}) {
+                Icon(Icons.Default.Notifications, contentDescription = null)
+
+            }
         }
     }
 }
@@ -84,7 +96,7 @@ fun Header (title: String) {
 @Preview(showBackground = true)
 @Composable
 fun HeaderPreview() {
-    Header(title="String")
+    Header(rememberNavController())
 }
 
 @Composable
@@ -104,15 +116,15 @@ fun Footer (navController: NavController) {
         ) {
             AppButton(onClick = {navController.navigate(ScreensRoute.ScreenLibraryRoute.route)}) {
                 Icon(Icons.AutoMirrored.Filled.List, contentDescription = null)
-                Text("Biblioteca")
+
             }
             AppButton(onClick = {navController.navigate(ScreensRoute.ScreenHomeRoute.route)}) {
                 Icon(Icons.Default.Home, contentDescription = null)
-                Text("Inicio")
+
             }
             AppButton(onClick = {navController.navigate(ScreensRoute.ScreenSearchRoute.route)}) {
                 Icon(Icons.Default.Search, contentDescription = null)
-                Text("Buscar")
+
             }
             /*
             Text("© Satchel 2025", fontSize = 14.sp)
@@ -134,18 +146,18 @@ fun FooterPreview() {
 @Composable
 fun AppButton (
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    isSelected: Boolean = false,
     content : @Composable RowScope.() -> Unit
     ) {
     Button(
         onClick = onClick,
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(2.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-            contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+            containerColor = Color.Transparent,
+            contentColor = Color.Black)
         )
-    ) {
+    {
         content()
     }
 }

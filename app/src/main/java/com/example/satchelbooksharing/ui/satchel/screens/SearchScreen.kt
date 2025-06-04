@@ -21,8 +21,6 @@ fun SearchScreen(navController: NavController) {
     Column (
         modifier = Modifier.fillMaxSize()
     ) {
-        Header(title = "Search bar here" )
-
         SearchField()
 
         Column (
