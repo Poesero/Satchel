@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
 
 @Composable
@@ -78,6 +77,7 @@ fun BookCRUDScreen(
 }
 
 @Preview(showBackground = true)
+
 @Composable
 fun BookCRUDPreview(){
     //BookCRUDScreen()
