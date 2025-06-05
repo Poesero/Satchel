@@ -1,6 +1,5 @@
 package com.example.satchelbooksharing.ui.satchel.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -18,14 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
-import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyContainer
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.satchelbooksharing.model.satchel.Book
+import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
 
 @Composable
-fun BookCRUDScreen() {
+fun BookCRUDScreen(
+    onBookAdded: () -> Unit,
+    libraryViewModel: LibraryViewModel = viewModel()
+) {
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -79,5 +80,5 @@ fun BookCRUDScreen() {
 @Preview(showBackground = true)
 @Composable
 fun BookCRUDPreview(){
-    BookCRUDScreen()
+    //BookCRUDScreen()
 }
