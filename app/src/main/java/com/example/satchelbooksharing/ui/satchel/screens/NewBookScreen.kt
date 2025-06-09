@@ -7,6 +7,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -19,10 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.satchelbooksharing.model.satchel.Genre
 import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
 
 @Composable
-fun BookCRUDScreen(
+fun NewBookScreen(
     onBookAdded: () -> Unit,
     libraryViewModel: LibraryViewModel = viewModel()
 ) {
@@ -39,6 +47,9 @@ fun BookCRUDScreen(
         }
         var descriptionValue by remember{
             mutableStateOf("")
+        }
+        var genreValue by remember {
+            mutableStateOf(Genre.OTHER)
         }
         Column(verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -67,8 +78,13 @@ fun BookCRUDScreen(
                 label = { Text(text = "description")},
                 maxLines = 4,
                 modifier = Modifier.height(100.dp)
-
             )
+
+
+
+            Button(onClick = {libraryViewModel.saveBook() }) {
+                Text(text = "Finish")
+            }
 
         }
     }
@@ -76,9 +92,37 @@ fun BookCRUDScreen(
 
 }
 
-@Preview(showBackground = true)
+
 
 @Composable
-fun BookCRUDPreview(){
-    //BookCRUDScreen()
+fun LongBasicDropdownMenu() {
+    var expanded by remember { mutableStateOf(false) }
+    // Placeholder list of 100 strings for demonstration
+    val menuItemData = List(100) { "Option ${it + 1}" }
+
+    Box(
+        modifier = Modifier
+            .padding(16.dp)
+    ) {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            menuItemData.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = { /* Do something... */ }
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun previewDDM(){
+    LongBasicDropdownMenu()
 }

@@ -34,7 +34,7 @@ class LibraryViewModel(
     var description by mutableStateOf("")
         private set
 
-    var genre by mutableStateOf("")
+    var genre by mutableStateOf(Genre.OTHER)
         private set
 
     var currentLibrary by mutableStateOf(UserLibrary())
@@ -46,15 +46,19 @@ class LibraryViewModel(
             currentLibrary = repository.getLibrary(userId)
         }
     }
-     */
+    */
 
     fun onTitleChanged(newTitle : String) { title = newTitle}
     fun onAuthorChanged(newAuthor : String) { author = newAuthor}
     fun onDescriptionChanged(newDesc : String) { description = newDesc}
-    fun onGenreChanged(newGenre : Genre) { genre = newGenre.name}
+    fun onGenreChanged(newGenre : Genre) { genre = newGenre}
 
     fun saveBook(){
         val book = Book(title, author, description, genre, null)
+        viewModelScope.launch {
+            repository.addBook(book)
+            resetFields()
+        }
     }
 
     private fun resetFields() {

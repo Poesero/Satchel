@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.model.satchel.Book
+import com.example.satchelbooksharing.model.satchel.Genre
 import com.example.satchelbooksharing.ui.satchel.sharedElements.BookCard
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
@@ -48,7 +49,7 @@ fun LibraryScreen(navController: NavController) {
                         //AddBookButton()
                     }
                     items(1) { index ->
-                        BookCard(book = Book("Harry Potter", "J. K. Rowling", null))
+                        BookCard(book = Book("Harry Potter", "J. K. Rowling","Buen libro gran libro",Genre.OTHER,null))
 
                     }
 
