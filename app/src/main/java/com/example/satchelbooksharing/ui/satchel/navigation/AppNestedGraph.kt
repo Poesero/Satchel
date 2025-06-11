@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.satchelbooksharing.ui.satchel.screens.HomeScreen
 import com.example.satchelbooksharing.ui.satchel.screens.LibraryScreen
+import com.example.satchelbooksharing.ui.satchel.screens.NewBookScreen
 import com.example.satchelbooksharing.ui.satchel.screens.ProfileScreen
 import com.example.satchelbooksharing.ui.satchel.screens.SearchScreen
 
@@ -22,6 +23,9 @@ fun NavGraphBuilder.appGraph(navController: NavController){
         }
         composable(route = ScreensRoute.ScreenProfileRoute.route){
             ProfileScreen(navController = navController)
+        }
+        composable(route = ScreensRoute.ScreenNewBookRoute.route){
+            NewBookScreen(navController = navController)
         }
     }
 }

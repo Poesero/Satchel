@@ -1,5 +1,8 @@
 package com.example.satchelbooksharing.ui.satchel.screens
 
+import android.widget.Toast
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,31 +11,38 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.satchelbooksharing.model.satchel.Genre
 import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
 
 @Composable
 fun NewBookScreen(
-    onBookAdded: () -> Unit,
-    libraryViewModel: LibraryViewModel = viewModel()
+    onBookAdded: () -> Unit = {},
+    libraryViewModel: LibraryViewModel = viewModel(),
+    navController: NavController
 ) {
 
     Box(
@@ -80,9 +90,17 @@ fun NewBookScreen(
                 modifier = Modifier.height(100.dp)
             )
 
+            GenreDropdownMenu(
+                genreValue = genreValue,
+                onGenreSelected = { genreValue = it }
+            )
 
+            val context = LocalContext.current
 
-            Button(onClick = {libraryViewModel.saveBook() }) {
+            Button(onClick = {libraryViewModel.saveBook()
+                Toast.makeText(context,"New book added", Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+            }) {
                 Text(text = "Finish")
             }
 
@@ -95,17 +113,44 @@ fun NewBookScreen(
 
 
 @Composable
-fun LongBasicDropdownMenu() {
+fun GenreDropdownMenu(genreValue: Genre, onGenreSelected: (Genre) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    // Placeholder list of 100 strings for demonstration
-    val menuItemData = List(100) { "Option ${it + 1}" }
-
     Box(
         modifier = Modifier
             .padding(16.dp)
     ) {
+        OutlinedTextField(
+            value = genreValue.name,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Genre")},
+            trailingIcon = {
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {expanded = false}
+        ) {
+            Genre.entries.forEach { genre ->
+                DropdownMenuItem(
+                    text = { Text(genre.name)},
+                    onClick = {
+                        onGenreSelected(genre)
+                        expanded = false
+                    }
+                )
+            }
+        }
+
+
+        /*
         IconButton(onClick = { expanded = !expanded }) {
-            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+            Icon(Icons.Default.Menu, contentDescription = "More options")
         }
         DropdownMenu(
             expanded = expanded,
@@ -113,16 +158,22 @@ fun LongBasicDropdownMenu() {
         ) {
             menuItemData.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option) },
-                    onClick = { /* Do something... */ }
+                    text = { Text(option.name) },
+                    onClick = { }
                 )
             }
         }
+        */
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun previewDDM(){
-    LongBasicDropdownMenu()
+    var genreValue by remember { mutableStateOf(Genre.OTHER) }
+
+    GenreDropdownMenu(
+        genreValue = genreValue,
+        onGenreSelected = { genreValue = it }
+    )
 }

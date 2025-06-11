@@ -7,7 +7,7 @@ sealed class ScreensRoute(val route: String){
     object ScreenSearchRoute : ScreensRoute(route = "Search")
     object ScreenProfileRoute : ScreensRoute(route = "Profile")
     object ScreenBookRoute : ScreensRoute(route = "Book")
-    object ScreenBookCrudsRoute : ScreensRoute(route = "BookCrud")
+    object ScreenNewBookRoute : ScreensRoute(route = "NewBook")
     object ScreenChatRoute : ScreensRoute(route = "Chat")
     object AuthRoute : ScreensRoute(route = "Auth")
     object AppRoute : ScreensRoute(route = "App")

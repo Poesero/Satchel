@@ -1,5 +1,6 @@
 package com.example.satchelbooksharing.ui.satchel.sharedElements
 
+import android.net.Uri
 import android.service.autofill.OnClickAction
 import com.example.satchelbooksharing.model.satchel.Book
 import androidx.compose.foundation.Image
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -39,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import com.example.satchelbooksharing.R
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -188,25 +191,17 @@ fun SearchPreview(){
 @Composable
 fun SatchelBodyContainer(
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
-    Box (
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .clip(RoundedCornerShape(24.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
+            .background(Color.LightGray.copy(alpha = 0.5f))
+            .padding(horizontal = 1.dp, vertical = 10.dp)
     ) {
-        /* Reemplazar con LazyColum
-        Column (
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxSize(),
-            content = content
-        )
-
-         */
+        content()
     }
 }
 
@@ -216,19 +211,21 @@ fun BookCard(book: Book){
         contentAlignment = Alignment.Center
     ) {
         Card(modifier = Modifier
-            .width(200.dp)
-            .height(260.dp),
+            .width(270.dp)
+            .height(290.dp),
             elevation = CardDefaults.cardElevation(7.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.DarkGray
             )
         ) {
             Column (modifier = Modifier.fillMaxSize()){
-                val painter = rememberAsyncImagePainter(
-                    model = book.imageUri ?: R.drawable.empty_image
-                )
+                val painter = if(!book.imageUri.isNullOrEmpty()) {
+                    rememberAsyncImagePainter(model = Uri.parse(book.imageUri))
+                } else {
+                    painterResource(id = R.drawable.empty_image)
+                }
                 Image(painter = painter,
-                    contentDescription = "null",
+                    contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
@@ -253,6 +250,17 @@ fun BookCard(book: Book){
                         .padding(horizontal = 6.dp)
                         .padding(top = 2.dp)
                 )
+
+                Text(text = book.description,
+                    fontSize = 13.sp,
+                    color = Color.LightGray,
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .padding(top = 2.dp),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
             }
         }
     }

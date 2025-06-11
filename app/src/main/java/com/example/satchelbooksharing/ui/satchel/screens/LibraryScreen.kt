@@ -3,21 +3,29 @@ package com.example.satchelbooksharing.ui.satchel.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.model.satchel.Genre
+import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
+import com.example.satchelbooksharing.ui.satchel.sharedElements.AppButton
 import com.example.satchelbooksharing.ui.satchel.sharedElements.BookCard
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
@@ -25,6 +33,7 @@ import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyConta
 
 @Composable
 fun LibraryScreen(navController: NavController) {
+
 
     Column(
         modifier = Modifier
@@ -35,35 +44,76 @@ fun LibraryScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(24.dp, vertical = 12.dp)
-        ) { SatchelBodyContainer {
+                .padding(5.dp, vertical = 12.dp)
+        ) {
+            SatchelBodyContainer {
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
+                    columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                    contentPadding = PaddingValues(5.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     item {
-                        //FaLta agregar una pantalla dedicada al ABM de los libros
-                        //AddBookButton()
+                        Card(modifier = Modifier
+                            .width(270.dp)
+                            .height(290.dp)
+                            .align(Alignment.CenterHorizontally),
+                            elevation = CardDefaults.cardElevation(7.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.LightGray
+                            )
+                        ){
+                            Row(modifier = Modifier.fillMaxSize(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                AppButton(
+                                    onClick = {
+                                        navController.navigate(ScreensRoute.ScreenNewBookRoute.route)
+                                    }) {
+                                    Icon(
+                                        Icons.Default.AddCircle, contentDescription = null,
+                                        modifier = Modifier.size(50.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
-                    items(1) { index ->
-                        BookCard(book = Book("Harry Potter", "J. K. Rowling","Buen libro gran libro",Genre.OTHER,null))
 
+                    items(3) {
+                        BookCard(
+                            book = Book(
+                                "Harry Potter",
+                                "J. K. Rowling",
+                                "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                                Genre.OTHER,
+                                null
+                            )
+                        )
+                        BookCard(
+                            book = Book(
+                                "Harry Potter 2",
+                                "J. K. Rowling",
+                                "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                                Genre.OTHER,
+                                null
+                            )
+                        )
+                        BookCard(
+                            book = Book(
+                                "Harry Potter 3",
+                                "J. K. Rowling",
+                                "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                                Genre.OTHER,
+                                null
+                            )
+                        )
                     }
-
                 }
-
             }
 
+            Footer(navController)
         }
-
-        Footer(navController)
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LibraryPreview(){
-}
