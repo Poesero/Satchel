@@ -11,7 +11,7 @@ class LocalLibraryRepository : LibraryRepository {
     private val books = _books.asStateFlow()
 
     override fun getBooks(): Flow<List<Book>> {
-        TODO("Not yet implemented")
+        return books
     }
 
     override suspend fun addBook(book: Book) {
