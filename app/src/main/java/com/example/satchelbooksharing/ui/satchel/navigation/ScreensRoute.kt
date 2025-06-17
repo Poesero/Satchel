@@ -2,6 +2,7 @@ package com.example.satchelbooksharing.ui.satchel.navigation
 
 sealed class ScreensRoute(val route: String){
     object ScreenSplashRoute : ScreensRoute(route = "Splash")
+    object ScreenAuthRoute : ScreensRoute(route = "AuthScreen")
     object ScreenHomeRoute : ScreensRoute(route = "Home")
     object ScreenLibraryRoute : ScreensRoute(route = "Library")
     object ScreenSearchRoute : ScreensRoute(route = "Search")

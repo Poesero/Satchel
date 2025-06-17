@@ -3,77 +3,27 @@ package com.example.satchelbooksharing.ui.satchel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.ui.satchel.navigation.SatchelNav
-import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelTheme
+import com.example.satchelbooksharing.viewModel.satchel.AuthViewModel
+import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
+    private val libraryViewModel = LibraryViewModel()
+    private val authViewModel = AuthViewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        FirebaseApp.initializeApp(this)
+
         setContent {
             SatchelTheme {
-                Surface(modifier = Modifier.fillMaxSize()){
-                    SatchelNav()
-                }
+                SatchelNav(
+                    libraryViewModel = libraryViewModel,
+                    authViewModel = authViewModel
+                )
             }
         }
     }
 }
-
-@Composable
-fun SatchelRoot(navController: NavHostController) {
-    val showFooter = remember { mutableStateOf(true) }
-/*
-    Scaffold(
-        bottomBar = {
-            if (showFooter.value) {
-                Footer(navController = navController)
-            }
-        }
-    ) { _->
-        SatchelNavGraph(
-            navController = navController,
-            showFooter = showFooter
-        )
-    }
-
- */
-}
-
-@Preview
-@Composable
-fun PreviewMain() {
-    /*
-    SatchelTheme {
-        Surface {
-            val navController = rememberNavController()
-            val showFooter = remember { mutableStateOf(true) }
-            SatchelNavGraph(navController = navController, showFooter = showFooter)
-        }
-    }
-
-     */
-}
-
-
-

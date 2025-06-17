@@ -1,22 +1,28 @@
 package com.example.satchelbooksharing.ui.satchel.navigation
 
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.satchelbooksharing.data.LocalLibraryRepository
+import com.example.satchelbooksharing.model.satchel.Book
+import com.example.satchelbooksharing.ui.satchel.screens.BookScreen
 import com.example.satchelbooksharing.ui.satchel.screens.HomeScreen
 import com.example.satchelbooksharing.ui.satchel.screens.LibraryScreen
 import com.example.satchelbooksharing.ui.satchel.screens.NewBookScreen
 import com.example.satchelbooksharing.ui.satchel.screens.ProfileScreen
 import com.example.satchelbooksharing.ui.satchel.screens.SearchScreen
+import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
 
-fun NavGraphBuilder.appGraph(navController: NavController){
+fun NavGraphBuilder.appGraph(navController: NavController,libraryViewModel: LibraryViewModel){
     navigation(startDestination = ScreensRoute.ScreenHomeRoute.route, route = ScreensRoute.AppRoute.route){
         composable(route = ScreensRoute.ScreenHomeRoute.route){
             HomeScreen(navController = navController)
         }
         composable(route = ScreensRoute.ScreenSearchRoute.route){
-            SearchScreen(navController = navController)
+            val books = libraryViewModel.books.collectAsState().value
+            SearchScreen(navController = navController, allBooks = books)
         }
         composable(route = ScreensRoute.ScreenLibraryRoute.route){
             LibraryScreen(navController = navController)
@@ -25,7 +31,10 @@ fun NavGraphBuilder.appGraph(navController: NavController){
             ProfileScreen(navController = navController)
         }
         composable(route = ScreensRoute.ScreenNewBookRoute.route){
-            NewBookScreen(navController = navController)
+            NewBookScreen(navController = navController, repo = LocalLibraryRepository())
+        }
+        composable(route = ScreensRoute.ScreenBookRoute.route){
+            BookScreen(navController = navController, book = Book())
         }
     }
 }

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">com.example.satchelbooksharing</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="default_web_client_id">926064833874-o7a1gjtu3nf6484o8qlqcdjsk7gg2n6t.apps.googleusercontent.com</string>
 </resources>

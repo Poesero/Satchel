@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -43,6 +45,7 @@ import com.example.satchelbooksharing.R
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -166,26 +169,40 @@ fun AppButton (
 }
 
 @Composable
-fun SearchField() {
-    var text by remember { mutableStateOf(TextFieldValue("")) }
-    return OutlinedTextField(
+fun SearchField(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    onSearch: () -> Unit
+) {
+    OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(5.dp),
-        value = text,
-        leadingIcon = { Icon(imageVector = Icons.Default.Search,
-            contentDescription = "searchIcon") },
-        onValueChange = {
-            text = it
+        value = value,
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "searchIcon"
+            )
         },
-        placeholder = { Text (text = "Que libro estamos buscando?") }
+        onValueChange = onValueChange,
+        placeholder = { Text (text = "¿Que libro estamos buscando?") },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                onSearch()
+            }
+        )
     )
 }
 
 @Preview (showBackground = true)
 @Composable
 fun SearchPreview(){
-    SearchField()
+    //SearchField()
 }
 
 @Composable

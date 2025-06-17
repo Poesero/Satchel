@@ -3,6 +3,7 @@ package com.example.satchelbooksharing.viewModel.satchel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.satchelbooksharing.model.satchel.AppState
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,20 +15,13 @@ class MainViewModel : ViewModel() {
 
     fun loadAppState() {
         viewModelScope.launch {
-            delay(5000)
-
-            val userLoggedIn = checkIfUserIsLoggedIn()
-
-            if (userLoggedIn) {
-                _state.value = AppState(isUserLoggedIn = true)
-            } else {
-                _state.value = AppState(isUserLoggedIn = false, showContinueButton = true)
-            }
+            delay(1500)
+            val isLoggedIn = checkIfUserIsLoggedIn()
+            _state.value = AppState(isUserLoggedIn = isLoggedIn)
         }
     }
 
     private fun checkIfUserIsLoggedIn(): Boolean {
-        return false
-        //En el futuro esto debera consultar con Firebase
+        return FirebaseAuth.getInstance().currentUser != null
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Card
@@ -49,7 +50,7 @@ fun LibraryScreen(navController: NavController) {
             SatchelBodyContainer {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(5.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
@@ -80,40 +81,65 @@ fun LibraryScreen(navController: NavController) {
                         }
                     }
 
-                    items(3) {
-                        BookCard(
-                            book = Book(
-                                "Harry Potter",
-                                "J. K. Rowling",
-                                "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                                Genre.OTHER,
-                                null
-                            )
+                    val books = listOf(
+                        Book(
+                            "Harry Potter",
+                            "J. K. Rowling",
+                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                            Genre.OTHER,
+                            null
+                        ),
+                        Book(
+                            "Harry Potter 2",
+                            "J. K. Rowling",
+                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                            Genre.OTHER,
+                            null
+                        ),
+                        Book(
+                            "Harry Potter 3",
+                            "J. K. Rowling",
+                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                            Genre.OTHER,
+                            null
+                        ),
+                        Book(
+                            "Harry Potter",
+                            "J. K. Rowling",
+                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                            Genre.OTHER,
+                            null
+                        ),
+                        Book(
+                            "Harry Potter 2",
+                            "J. K. Rowling",
+                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                            Genre.OTHER,
+                            null
+                        ),
+                        Book(
+                            "Harry Potter",
+                            "J. K. Rowling",
+                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                            Genre.OTHER,
+                            null
+                        ),
+                        Book(
+                            "Harry Potter 2",
+                            "J. K. Rowling",
+                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
+                            Genre.OTHER,
+                            null
                         )
-                        BookCard(
-                            book = Book(
-                                "Harry Potter 2",
-                                "J. K. Rowling",
-                                "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                                Genre.OTHER,
-                                null
-                            )
-                        )
-                        BookCard(
-                            book = Book(
-                                "Harry Potter 3",
-                                "J. K. Rowling",
-                                "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                                Genre.OTHER,
-                                null
-                            )
-                        )
+                    )
+
+                    items(books) { book ->
+                        BookCard(book = book)
                     }
                 }
             }
-
-            Footer(navController)
         }
+        Footer(navController)
     }
 }
 
