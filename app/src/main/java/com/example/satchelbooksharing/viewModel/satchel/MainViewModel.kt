@@ -15,7 +15,7 @@ class MainViewModel : ViewModel() {
 
     fun loadAppState() {
         viewModelScope.launch {
-            delay(1500)
+            delay(3000)
             val isLoggedIn = checkIfUserIsLoggedIn()
             _state.value = AppState(isUserLoggedIn = isLoggedIn)
         }

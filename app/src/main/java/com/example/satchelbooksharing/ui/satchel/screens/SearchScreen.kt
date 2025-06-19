@@ -61,8 +61,6 @@ fun SearchScreen(navController: NavController, allBooks: List<Book>) {
         }
     }
 
-
-    //Header must have a search bar where the user type the title of the book
     Column (
         modifier = Modifier.fillMaxSize()
     ) {
@@ -77,7 +75,7 @@ fun SearchScreen(navController: NavController, allBooks: List<Book>) {
             onSearch = { doSearch = true}
         )
         }
-        SatchelBodyContainer {
+        SatchelBodyContainer (modifier = Modifier.weight(1f)){
             if (filteredBooks.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
@@ -99,7 +97,9 @@ fun SearchScreen(navController: NavController, allBooks: List<Book>) {
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(filteredBooks) { book ->
-                        BookCard(book = book)
+                        BookCard(book = book){
+                            navController.navigate("Book/${book.id}")
+                        }
                     }
                 }
             }

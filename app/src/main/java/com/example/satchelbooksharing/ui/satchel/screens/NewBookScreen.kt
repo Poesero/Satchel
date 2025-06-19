@@ -30,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.satchelbooksharing.data.FirestoreLibraryRepository
+import com.example.satchelbooksharing.data.LibraryRepository
 import com.example.satchelbooksharing.data.LocalLibraryRepository
 import com.example.satchelbooksharing.model.satchel.Genre
 import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
@@ -38,13 +40,10 @@ import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModelFactory
 @Composable
 fun NewBookScreen(
     onBookAdded: () -> Unit = {},
-    libraryViewModel: LibraryViewModel = viewModel(),
+    libraryViewModel: LibraryViewModel,
     navController: NavController,
-    repo: LocalLibraryRepository
+
 ) {
-    val viewModel: LibraryViewModel = viewModel(
-        factory = LibraryViewModelFactory(repo)
-    )
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -66,25 +65,24 @@ fun NewBookScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
                     .padding(13.dp)
-                    //.background(color = Color.Green)
                     .padding(2.dp, vertical = 10.dp)) {
 
-            TextField(value = titleValue, onValueChange = {
-                titleValue = it
+            TextField(value = libraryViewModel.title, onValueChange = {
+                libraryViewModel.onTitleChanged(it)
             },
                 label = { Text(text = "title")},
                 singleLine = true
             )
 
-            TextField(value = authorValue, onValueChange = {
-                authorValue = it
+            TextField(value = libraryViewModel.author, onValueChange = {
+                libraryViewModel.onAuthorChanged(it)
             },
                 label = { Text(text = "author")},
                 singleLine = true
             )
 
-            TextField(value = descriptionValue, onValueChange = {
-                descriptionValue = it
+            TextField(value = libraryViewModel.description, onValueChange = {
+                libraryViewModel.onDescriptionChanged(it)
             },
                 label = { Text(text = "description")},
                 maxLines = 4,
@@ -92,8 +90,8 @@ fun NewBookScreen(
             )
 
             GenreDropdownMenu(
-                genreValue = genreValue,
-                onGenreSelected = { genreValue = it }
+                genreValue = libraryViewModel.genre,
+                onGenreSelected = { libraryViewModel.onGenreChanged(it)}
             )
 
             val context = LocalContext.current

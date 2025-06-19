@@ -40,14 +40,6 @@ class LibraryViewModel(
     var currentLibrary by mutableStateOf(UserLibrary())
         private set
 
-    /*
-    fun loadLibrary(userId: String) {
-        viewModelScope.launch {
-            currentLibrary = repository.getLibrary(userId)
-        }
-    }
-    */
-
     fun onTitleChanged(newTitle : String) { title = newTitle}
     fun onAuthorChanged(newAuthor : String) { author = newAuthor}
     fun onDescriptionChanged(newDesc : String) { description = newDesc}
@@ -67,15 +59,6 @@ class LibraryViewModel(
         description = ""
         genre = Genre.OTHER
     }
-    /*
-    fun addBook(book: Book){
-        viewModelScope.launch {
-            val userId = currentLibrary.user
-            repository.addBookToUserLibrary(userId, book)
-            currentLibrary.collection.add(book)
-        }
-    }
-     */
 
     fun deleteBook(book: Book) {
         viewModelScope.launch {

@@ -3,8 +3,11 @@ package com.example.satchelbooksharing.ui.satchel.navigation
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.example.satchelbooksharing.data.FirestoreLibraryRepository
 import com.example.satchelbooksharing.data.LocalLibraryRepository
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.ui.satchel.screens.BookScreen
@@ -25,16 +28,21 @@ fun NavGraphBuilder.appGraph(navController: NavController,libraryViewModel: Libr
             SearchScreen(navController = navController, allBooks = books)
         }
         composable(route = ScreensRoute.ScreenLibraryRoute.route){
-            LibraryScreen(navController = navController)
+            LibraryScreen(navController = navController, libraryViewModel = libraryViewModel)
         }
         composable(route = ScreensRoute.ScreenProfileRoute.route){
             ProfileScreen(navController = navController)
         }
         composable(route = ScreensRoute.ScreenNewBookRoute.route){
-            NewBookScreen(navController = navController, repo = LocalLibraryRepository())
+            NewBookScreen(navController = navController, libraryViewModel = libraryViewModel)
         }
-        composable(route = ScreensRoute.ScreenBookRoute.route){
-            BookScreen(navController = navController, book = Book())
+        composable(
+            route = "Book/{bookId}",
+            arguments = listOf(navArgument("bookId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString("bookId") ?: return@composable
+            BookScreen(navController, bookId)
         }
+
     }
 }

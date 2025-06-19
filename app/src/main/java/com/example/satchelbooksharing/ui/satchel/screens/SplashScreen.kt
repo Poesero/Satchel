@@ -20,6 +20,7 @@ fun SplashScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+
     LaunchedEffect(Unit) {
         viewModel.loadAppState()
     }
@@ -38,18 +39,16 @@ fun SplashScreen(
 
             state?.isUserLoggedIn == true -> {
                 LaunchedEffect("goHome") {
-                    delay(2000)
                     navController.navigate(ScreensRoute.ScreenHomeRoute.route) {
-                        popUpTo(ScreensRoute.ScreenSplashRoute.route) { inclusive = true } // ✅
+                        popUpTo(ScreensRoute.ScreenSplashRoute.route) { inclusive = true }
                     }
                 }
             }
 
             else -> {
                 LaunchedEffect("goAuth") {
-                    delay(2000)
                     navController.navigate(ScreensRoute.ScreenAuthRoute.route) {
-                        popUpTo(ScreensRoute.ScreenSplashRoute.route) { inclusive = true } // ✅
+                        popUpTo(ScreensRoute.ScreenSplashRoute.route) { inclusive = true }
                     }
                 }
             }

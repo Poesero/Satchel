@@ -8,15 +8,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,30 +40,68 @@ import com.example.satchelbooksharing.R
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.model.satchel.Genre
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.tasks.await
 
 @Composable
-fun BookScreen (navController: NavController, book: Book){
+fun BookScreen (navController: NavController, bookId: String){
+    var book by remember  { mutableStateOf<Book?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(bookId) {
+        try {
+            val doc = Firebase.firestore.collection("books").document(bookId).get().await()
+            book = doc.toObject(Book::class.java)?.apply { id = doc.id }
+        } catch (_: Exception) {
+        } finally {
+            isLoading = false
+        }
+    }
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+
+        book?.let { b ->
+            BookDetailContent(navController = navController, book = b)
+        } ?: run {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Libro no encontrado.")
+            }
+        }
+    }
+}
+@Composable
+private fun BookDetailContent(navController: NavController, book: Book) {
     Column {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = book.title,
+            Text(
+                text = book.title,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
         }
-        HorizontalDivider(thickness = 2.dp, modifier = Modifier.padding(horizontal = 20.dp, vertical = 2.dp))
+        HorizontalDivider(
+            thickness = 2.dp,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 2.dp)
+        )
 
         val painter = if (!book.imageUri.isNullOrEmpty()) {
             rememberAsyncImagePainter(model = Uri.parse(book.imageUri))
         } else {
             painterResource(id = R.drawable.empty_image)
         }
-        Image(painter = painter,
+        Image(
+            painter = painter,
             contentDescription = null,
             modifier = Modifier
                 .width(150.dp)
@@ -65,17 +110,20 @@ fun BookScreen (navController: NavController, book: Book){
             contentScale = ContentScale.Crop
         )
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 5.dp)
-            .background(
-                color = Color.LightGray,
-                shape = RoundedCornerShape(40.dp)
-            )
-            .border(2.dp, Color.Black,RoundedCornerShape(40.dp))
-            .padding(20.dp),
-            contentAlignment = Alignment.Center){
-            Text(text = book.description,
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 5.dp)
+                .background(
+                    color = Color.LightGray,
+                    shape = RoundedCornerShape(40.dp)
+                )
+                .border(2.dp, Color.Black, RoundedCornerShape(40.dp))
+                .padding(20.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = book.description,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Black,
                 modifier = Modifier
@@ -83,45 +131,54 @@ fun BookScreen (navController: NavController, book: Book){
             )
 
         }
-        Row (modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 1.dp, horizontal = 20.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 1.dp, horizontal = 20.dp),
             horizontalArrangement = Arrangement.Start
 
-        ){
-            Badge(modifier = Modifier){
+        ) {
+            Badge(modifier = Modifier) {
                 Text(text = book.genre.displayName)
             }
-            Badge(modifier = Modifier
-                .padding(horizontal = 2.dp)){
+            Badge(
+                modifier = Modifier
+                    .padding(horizontal = 2.dp)
+            ) {
                 Text(text = book.genre.displayName)
             }
         }
-        Row (modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 1.dp, horizontal = 20.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 1.dp, horizontal = 20.dp),
             horizontalArrangement = Arrangement.Start
 
-        ){
-            Badge(modifier = Modifier){
+        ) {
+            Badge(modifier = Modifier) {
                 Text(text = "Pedir")
             }
-            Badge(modifier = Modifier
-                .padding(horizontal = 2.dp)){
+            Badge(
+                modifier = Modifier
+                    .padding(horizontal = 2.dp)
+            ) {
                 Text(text = "Disponible")
             }
         }
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 5.dp)
-            .background(
-                color = Color.LightGray,
-                shape = RoundedCornerShape(40.dp)
-            )
-            .border(2.dp, Color.Black,RoundedCornerShape(40.dp))
-            .padding(20.dp),
-            contentAlignment = Alignment.Center){
-            Text(text = "6/10",
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 5.dp)
+                .background(
+                    color = Color.LightGray,
+                    shape = RoundedCornerShape(40.dp)
+                )
+                .border(2.dp, Color.Black, RoundedCornerShape(40.dp))
+                .padding(20.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "6/10",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Black,
                 modifier = Modifier
@@ -134,7 +191,7 @@ fun BookScreen (navController: NavController, book: Book){
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun Prev(){
     val mockBook = Book(
@@ -147,5 +204,7 @@ fun Prev(){
 
     val navController = rememberNavController()
 
-    BookScreen(navController = navController, book = mockBook)
+    //BookScreen(navController = navController, bookId = mockBook)
 }
+ */
+

@@ -223,7 +223,7 @@ fun SatchelBodyContainer(
 }
 
 @Composable
-fun BookCard(book: Book){
+fun BookCard(book: Book, onClick: () -> Unit){
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -288,7 +288,7 @@ fun BookCard(book: Book){
 @Composable
 fun PreviewBookCard() {
     val exampleBook = Book()
-    BookCard(book = exampleBook)
+    //BookCard(book = exampleBook)
 
 }
 

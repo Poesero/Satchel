@@ -18,11 +18,17 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.satchelbooksharing.data.FirestoreLibraryRepository
+import com.example.satchelbooksharing.data.LibraryRepository
+import com.example.satchelbooksharing.data.LocalLibraryRepository
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.model.satchel.Genre
 import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
@@ -31,9 +37,17 @@ import com.example.satchelbooksharing.ui.satchel.sharedElements.BookCard
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyContainer
+import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
+import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModelFactory
 
 @Composable
-fun LibraryScreen(navController: NavController) {
+fun LibraryScreen(navController: NavController, libraryViewModel: LibraryViewModel) {
+    val viewModel: LibraryViewModel = viewModel(
+        factory = LibraryViewModelFactory(FirestoreLibraryRepository())
+    )
+
+    val books by libraryViewModel.books.collectAsState()
+
 
 
     Column(
@@ -81,60 +95,10 @@ fun LibraryScreen(navController: NavController) {
                         }
                     }
 
-                    val books = listOf(
-                        Book(
-                            "Harry Potter",
-                            "J. K. Rowling",
-                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                            Genre.OTHER,
-                            null
-                        ),
-                        Book(
-                            "Harry Potter 2",
-                            "J. K. Rowling",
-                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                            Genre.OTHER,
-                            null
-                        ),
-                        Book(
-                            "Harry Potter 3",
-                            "J. K. Rowling",
-                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                            Genre.OTHER,
-                            null
-                        ),
-                        Book(
-                            "Harry Potter",
-                            "J. K. Rowling",
-                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                            Genre.OTHER,
-                            null
-                        ),
-                        Book(
-                            "Harry Potter 2",
-                            "J. K. Rowling",
-                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                            Genre.OTHER,
-                            null
-                        ),
-                        Book(
-                            "Harry Potter",
-                            "J. K. Rowling",
-                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                            Genre.OTHER,
-                            null
-                        ),
-                        Book(
-                            "Harry Potter 2",
-                            "J. K. Rowling",
-                            "Buen libro gran libro, trata de un joven hechicero con una peculiar cicatriz en su frente y un destino lleno de aventuras.",
-                            Genre.OTHER,
-                            null
-                        )
-                    )
-
                     items(books) { book ->
-                        BookCard(book = book)
+                        BookCard(book = book){
+                            navController.navigate("Book/${book.id}")
+                        }
                     }
                 }
             }
