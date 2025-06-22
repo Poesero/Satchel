@@ -10,6 +10,7 @@ import com.example.satchelbooksharing.data.LocalLibraryRepository
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.model.satchel.Genre
 import com.example.satchelbooksharing.model.satchel.UserLibrary
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -45,11 +46,24 @@ class LibraryViewModel(
     fun onDescriptionChanged(newDesc : String) { description = newDesc}
     fun onGenreChanged(newGenre : Genre) { genre = newGenre}
 
-    fun saveBook(){
-        val book = Book(title, author, description, genre, null)
-        viewModelScope.launch {
-            repository.addBook(book)
-            resetFields()
+    fun saveBook(onSuccess: () -> Unit = {}) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val book = Book(
+                title = title,
+                author = author,
+                description = description,
+                genre = genre,
+                imageUri = null,
+                ownerId = currentUser.uid  // Aquí asignamos el dueño
+            )
+            viewModelScope.launch {
+                repository.addBook(book)
+                resetFields()
+                onSuccess() // Para ejecutar algo después de guardar, opcional
+            }
+        } else {
+            // Aquí podrías manejar caso sin usuario logueado si querés
         }
     }
 

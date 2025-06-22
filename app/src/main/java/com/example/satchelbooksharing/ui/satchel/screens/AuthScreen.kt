@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.satchelbooksharing.R
+import com.example.satchelbooksharing.model.satchel.Profile
 import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
 import com.example.satchelbooksharing.viewModel.satchel.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -24,6 +25,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun AuthScreen(
@@ -36,9 +39,24 @@ fun AuthScreen(
         try {
             val account = task.getResult(ApiException::class.java)
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+
             FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnCompleteListener { authTask ->
                     if (authTask.isSuccessful) {
+                        val user = FirebaseAuth.getInstance().currentUser
+                        if (user != null) {
+                            val profile = Profile(
+                                id = user.uid,
+                                name = user.displayName ?: "",
+                                email = user.email ?: "",
+                                photoUrl = user.photoUrl?.toString()
+                            )
+
+                            Firebase.firestore.collection("profiles")
+                                .document(user.uid)
+                                .set(profile)
+                        }
+
                         navController.navigate(ScreensRoute.ScreenHomeRoute.route) {
                             popUpTo(ScreensRoute.AuthRoute.route) { inclusive = true }
                         }

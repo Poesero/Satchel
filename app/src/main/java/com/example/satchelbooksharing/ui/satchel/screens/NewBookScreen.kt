@@ -49,18 +49,6 @@ fun NewBookScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        var titleValue by remember{
-            mutableStateOf("")
-        }
-        var authorValue by remember{
-            mutableStateOf("")
-        }
-        var descriptionValue by remember{
-            mutableStateOf("")
-        }
-        var genreValue by remember {
-            mutableStateOf(Genre.OTHER)
-        }
         Column(verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
@@ -96,12 +84,22 @@ fun NewBookScreen(
 
             val context = LocalContext.current
 
-            Button(onClick = {libraryViewModel.saveBook()
-                Toast.makeText(context,"New book added", Toast.LENGTH_SHORT).show()
-                navController.popBackStack()
+            Button(onClick = {
+                libraryViewModel.saveBook {
+                    Toast.makeText(context, "New book added", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
+                }
             }) {
                 Text(text = "Finish")
             }
+            Button(onClick = {
+                navController.popBackStack()
+            })
+            {
+                Text(text = "Cancel")
+            }
+
+
 
         }
     }

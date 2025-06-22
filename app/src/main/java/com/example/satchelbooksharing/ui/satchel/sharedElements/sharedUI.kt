@@ -5,6 +5,7 @@ import android.service.autofill.OnClickAction
 import com.example.satchelbooksharing.model.satchel.Book
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -229,7 +230,8 @@ fun BookCard(book: Book, onClick: () -> Unit){
     ) {
         Card(modifier = Modifier
             .width(270.dp)
-            .height(290.dp),
+            .height(290.dp)
+            .clickable { onClick() },
             elevation = CardDefaults.cardElevation(7.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.DarkGray
@@ -290,6 +292,21 @@ fun PreviewBookCard() {
     val exampleBook = Book()
     //BookCard(book = exampleBook)
 
+}
+
+@Composable
+fun RequestToggleButton(
+    requested: Boolean,
+    onToggle: (Boolean) -> Unit
+) {
+    val toggleState = remember { mutableStateOf(requested) }
+
+    Badge(modifier = Modifier.clickable {
+        toggleState.value = !toggleState.value
+        onToggle(toggleState.value)
+    }) {
+        Text(text = if (toggleState.value) "Cancelar Pedido" else "Pedir")
+    }
 }
 
 

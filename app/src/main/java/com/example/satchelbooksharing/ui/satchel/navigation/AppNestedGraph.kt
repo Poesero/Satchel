@@ -37,11 +37,11 @@ fun NavGraphBuilder.appGraph(navController: NavController,libraryViewModel: Libr
             NewBookScreen(navController = navController, libraryViewModel = libraryViewModel)
         }
         composable(
-            route = "Book/{bookId}",
+            route = "${ScreensRoute.ScreenBookRoute.route}/{bookId}",
             arguments = listOf(navArgument("bookId") { type = NavType.StringType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId") ?: return@composable
-            BookScreen(navController, bookId)
+            BookScreen(navController = navController, bookId = bookId)
         }
 
     }

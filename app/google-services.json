@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "926064833874-fmo3pr02ra1pjvn311uddamkrnvpm979.apps.googleusercontent.com",
+          "client_id": "926064833874-ibsmrnr5bvf0qpk5g64mle6tdmejafj6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.satchelbooksharing",
-            "certificate_hash": "383c7492223a7404f80b2528142f75302f4e5ae5"
+            "certificate_hash": "20a427ac481d83592ad0545e5e99d2fbf3c198d8"
           }
         },
         {
