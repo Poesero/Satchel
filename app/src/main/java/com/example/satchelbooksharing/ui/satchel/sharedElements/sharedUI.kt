@@ -6,19 +6,27 @@ import com.example.satchelbooksharing.model.satchel.Book
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -36,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +69,13 @@ import androidx.navigation.testing.TestNavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelTheme
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.derivedStateOf
+import com.google.android.gms.auth.api.phone.SmsCodeAutofillClient.PermissionState
+
 /*
 @Composable
 fun TestUi(){
@@ -310,51 +326,79 @@ fun RequestToggleButton(
 }
 
 
-/*
 @Composable
-fun CajasAbril(){
+fun PrestamosSwipeView() {
+    val listState = rememberLazyListState()
+    val snappingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
-    Box(contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()) {
+    val totalPages = 2
+    val currentPage by remember {
+        derivedStateOf {
+            val visibleItem = listState.firstVisibleItemIndex
+            val offset = listState.firstVisibleItemScrollOffset
+            if (offset > 100) visibleItem + 1 else visibleItem
+        }
+    }
 
-
-        Column (modifier = Modifier.padding(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)){
-
-            Box(modifier = Modifier
-                .size(400.dp, 100.dp)
-                .background(Color.DarkGray),
-                contentAlignment = Alignment.Center) {
-
-                Box(modifier = Modifier
-                    .size(400.dp, 50.dp)
-                    .background(Color.Green),
-                    contentAlignment = Alignment.Center) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyRow(
+            state = listState,
+            flingBehavior = snappingBehavior,
+            modifier = Modifier
+                .weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
+            contentPadding = PaddingValues(0.dp)
+        ) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .fillMaxHeight()
+                        .background(Color(0xFF4CAF50)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Presté", color = Color.White, fontSize = 24.sp)
                 }
             }
 
-            Box(modifier = Modifier
-                .size(400.dp, 100.dp)
-                .background(Color.DarkGray),
-                contentAlignment = Alignment.Center) {
-
-                Box(modifier = Modifier
-                    .size(400.dp, 50.dp)
-                    .background(Color.Green),
-                    contentAlignment = Alignment.Center) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .fillMaxHeight()
+                        .background(Color(0xFF2196F3)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Me prestaron", color = Color.White, fontSize = 24.sp)
                 }
-
             }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(totalPages) { index ->
+                val isSelected = index == currentPage
+                Box(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .size(if (isSelected) 10.dp else 8.dp)
+                        .clip(CircleShape)
+                        .background(if (isSelected) Color.Black else Color.Gray)
+                )
+            }
+        }
 
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun PreviewBoxes(){
-    CajasAbril()
+fun Prev(){
+    PrestamosSwipeView()
 }
-*/
