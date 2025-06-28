@@ -11,7 +11,7 @@ data class Book(
     var isAvailable: Boolean = true,
     var ownerId: String ="",
     val ownerName: String ="",
-    @get:Exclude @set:Exclude
+    @get:Exclude
     var id: String = ""
 )
 

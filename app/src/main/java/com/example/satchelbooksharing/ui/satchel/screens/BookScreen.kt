@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -42,9 +41,15 @@ fun BookScreen(navController: NavController, bookId: String) {
 
     LaunchedEffect(bookId) {
         try {
-            val doc = FirebaseFirestore.getInstance().collection("books").document(bookId).get().await()
+            val doc = FirebaseFirestore.getInstance()
+                .collection("books")
+                .document(bookId)
+                .get()
+                .await()
             book = doc.toObject(Book::class.java)?.apply { id = doc.id }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            // Opcional: log o mensaje
+            book = null
         } finally {
             isLoading = false
         }

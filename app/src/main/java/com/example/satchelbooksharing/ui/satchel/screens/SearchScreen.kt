@@ -47,40 +47,43 @@ import com.example.satchelbooksharing.ui.satchel.sharedElements.SearchField
 @Composable
 fun SearchScreen(navController: NavController, allBooks: List<Book>) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
-    var doSearch by remember { mutableStateOf(false) }
-    var filteredBooks by remember{mutableStateOf(emptyList<Book>()) }
+    var filteredBooks by remember { mutableStateOf(emptyList<Book>()) }
 
-    LaunchedEffect(doSearch) {
-        if (doSearch){
-            filteredBooks = if (query.text.isNotBlank()){
-                allBooks.filter {
-                    it.title.contains(query.text, ignoreCase = true)
-                }
-            } else emptyList()
-            doSearch = false
+    fun doSearch() {
+        filteredBooks = if (query.text.isNotBlank()) {
+            allBooks.filter {
+                it.title.contains(query.text, ignoreCase = true)
+            }
+        } else {
+            emptyList()
         }
     }
 
-    Column (
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp, bottom = 5.dp),
+                .padding(top = 20.dp, bottom = 5.dp)
         ) {
-        SearchField(
-            value = query,
-            onValueChange = { query = it},
-            onSearch = { doSearch = true}
-        )
+            SearchField(
+                value = query,
+                onValueChange = {
+                    query = it
+                },
+                onSearch = {
+                    doSearch()
+                }
+            )
         }
-        SatchelBodyContainer (modifier = Modifier.weight(1f)){
+
+        SatchelBodyContainer(modifier = Modifier.weight(1f)) {
             if (filteredBooks.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
                     val msg = if (query.text.isNotBlank()) {
-                        "No se encontraron libros que contengan \"${query.text}\" ."
+                        "No se encontraron libros que contengan \"${query.text}\"."
                     } else {
                         "Toda aventura comienza con un solo paso."
                     }
@@ -97,16 +100,18 @@ fun SearchScreen(navController: NavController, allBooks: List<Book>) {
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(filteredBooks) { book ->
-                        BookCard(book = book){
+                        BookCard(book = book) {
                             navController.navigate("Book/${book.id}")
                         }
                     }
                 }
             }
         }
+
         Footer(navController = navController)
     }
 }
+
 @Preview (showBackground = true)
 @Composable
 fun SearchScreenPreview(){

@@ -11,6 +11,7 @@ import com.example.satchelbooksharing.data.FirestoreLibraryRepository
 import com.example.satchelbooksharing.data.LocalLibraryRepository
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.ui.satchel.screens.BookScreen
+import com.example.satchelbooksharing.ui.satchel.screens.ChatScreen
 import com.example.satchelbooksharing.ui.satchel.screens.HomeScreen
 import com.example.satchelbooksharing.ui.satchel.screens.LibraryScreen
 import com.example.satchelbooksharing.ui.satchel.screens.NewBookScreen
@@ -24,7 +25,7 @@ fun NavGraphBuilder.appGraph(navController: NavController,libraryViewModel: Libr
             HomeScreen(navController = navController)
         }
         composable(route = ScreensRoute.ScreenSearchRoute.route){
-            val books = libraryViewModel.books.collectAsState().value
+            val books = libraryViewModel.allBooks.collectAsState().value
             SearchScreen(navController = navController, allBooks = books)
         }
         composable(route = ScreensRoute.ScreenLibraryRoute.route){
@@ -42,6 +43,13 @@ fun NavGraphBuilder.appGraph(navController: NavController,libraryViewModel: Libr
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId") ?: return@composable
             BookScreen(navController = navController, bookId = bookId)
+        }
+        composable(
+            route = "chat_screen/{chatId}",
+            arguments = listOf(navArgument("chatId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val chatId = backStackEntry.arguments?.getString("chatId") ?: return@composable
+            ChatScreen(navController = navController, chatId = chatId)
         }
 
     }

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -74,6 +75,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.derivedStateOf
+import com.example.satchelbooksharing.model.satchel.BookRequest
 import com.google.android.gms.auth.api.phone.SmsCodeAutofillClient.PermissionState
 
 /*
@@ -327,78 +329,43 @@ fun RequestToggleButton(
 
 
 @Composable
-fun PrestamosSwipeView() {
-    val listState = rememberLazyListState()
-    val snappingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+fun PrestamosSwipeView(
+    prestados: List<BookRequest>,
+    recibidos: List<BookRequest>
+) {
+    var selectedTab by remember { mutableStateOf(0) }
+    val tabs = listOf("Prestados", "Recibidos")
 
-    val totalPages = 2
-    val currentPage by remember {
-        derivedStateOf {
-            val visibleItem = listState.firstVisibleItemIndex
-            val offset = listState.firstVisibleItemScrollOffset
-            if (offset > 100) visibleItem + 1 else visibleItem
-        }
-    }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        LazyRow(
-            state = listState,
-            flingBehavior = snappingBehavior,
-            modifier = Modifier
-                .weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(0.dp),
-            contentPadding = PaddingValues(0.dp)
-        ) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .fillMaxHeight()
-                        .background(Color(0xFF4CAF50)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Presté", color = Color.White, fontSize = 24.sp)
-                }
-            }
-
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .fillMaxHeight()
-                        .background(Color(0xFF2196F3)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Me prestaron", color = Color.White, fontSize = 24.sp)
+    Column {
+        TabRow(selectedTabIndex = selectedTab) {
+            tabs.forEachIndexed { index, title ->
+                Tab(selected = selectedTab == index, onClick = { selectedTab = index }) {
+                    Text(title, modifier = Modifier.padding(16.dp))
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(totalPages) { index ->
-                val isSelected = index == currentPage
-                Box(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(if (isSelected) 10.dp else 8.dp)
-                        .clip(CircleShape)
-                        .background(if (isSelected) Color.Black else Color.Gray)
-                )
+        val lista = if (selectedTab == 0) prestados else recibidos
+        if (lista.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No hay préstamos en esta sección.")
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(lista) { request ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text("📖 ${request.bookTitle}")
+                            Text(if (selectedTab == 0) "📤 Prestado a: ${request.requesterName}" else "📥 Prestado por: ${request.ownerName}")
+                        }
+                    }
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun Prev(){
-    PrestamosSwipeView()
 }

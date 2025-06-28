@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -42,13 +43,13 @@ import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModelFactory
 
 @Composable
 fun LibraryScreen(navController: NavController, libraryViewModel: LibraryViewModel) {
-    val viewModel: LibraryViewModel = viewModel(
-        factory = LibraryViewModelFactory(FirestoreLibraryRepository())
-    )
+
 
     val books by libraryViewModel.books.collectAsState()
 
-
+    LaunchedEffect(Unit) {
+        libraryViewModel.loadOwnBooks()
+    }
 
     Column(
         modifier = Modifier
@@ -97,7 +98,8 @@ fun LibraryScreen(navController: NavController, libraryViewModel: LibraryViewMod
 
                     items(books) { book ->
                         BookCard(book = book){
-                            navController.navigate("Book/${book.id}")
+                            println("🟢 Navegando a libro con id: ${book.id}")
+                            navController.navigate("Book/${book.id }")
                         }
                     }
                 }

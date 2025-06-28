@@ -54,7 +54,9 @@ fun ProfileScreen(navController: NavController) {
 
     LaunchedEffect(Unit) {
         viewModel.cargarRequestsPendientes()
+        viewModel.cargarPrestamos()
     }
+
 
     Column (
         modifier = Modifier.fillMaxSize()
@@ -74,7 +76,13 @@ fun ProfileScreen(navController: NavController) {
                 .padding(24.dp)
         ) {
             SatchelBodyContainer(Modifier.weight(1f)) {
-                PrestamosSwipeView()
+                SatchelBodyContainer(Modifier.weight(1f)) {
+                    PrestamosSwipeView(
+                        prestados = viewModel.prestamosDado.value,
+                        recibidos = viewModel.prestamosRecibido.value
+                    )
+                }
+
             }
         }
 
@@ -156,8 +164,6 @@ fun SolicitudesPendientesSection(
         ) {
             Text("Solicitudes pendientes: (${solicitudes.size})")
         }
-
-        // Lista desplegable
         if (expanded) {
             Column(
                 modifier = Modifier

@@ -13,12 +13,31 @@ class FirestoreLibraryRepository : LibraryRepository {
     private val db = Firebase.firestore
     private val booksCollection = db.collection("books")
 
-    override fun getBooks(): Flow<List<Book>> = callbackFlow {
+    override fun getBooksByOwner(userId: String): Flow<List<Book>> = callbackFlow {
+        val listener = booksCollection
+            .whereEqualTo("ownerId", userId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null) {
+                    close(error ?: Exception("Unknown Firestore error"))
+                    return@addSnapshotListener
+                }
+
+                val books = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Book::class.java)?.copy(id = doc.id) // ✅ Importante
+                }
+
+                trySend(books)
+            }
+
+        awaitClose { listener.remove() }
+    }
+
+    override fun getAllBooks(): Flow<List<Book>> = callbackFlow {
         val listener = booksCollection.addSnapshotListener { snapshot, _ ->
             val books = snapshot?.documents?.mapNotNull { doc ->
-                val book = doc.toObject(Book::class.java)
-                book?.copy(id = doc.id)
+                doc.toObject(Book::class.java)?.copy(id = doc.id) // ✅ Importante
             } ?: emptyList()
+
             trySend(books)
         }
         awaitClose { listener.remove() }

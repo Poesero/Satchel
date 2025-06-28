@@ -11,6 +11,7 @@ import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.model.satchel.Genre
 import com.example.satchelbooksharing.model.satchel.UserLibrary
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -20,11 +21,25 @@ class LibraryViewModel(
     private val repository: LibraryRepository = LocalLibraryRepository()
 ) : ViewModel() {
 
-    val books: StateFlow<List<Book>> = repository.getBooks().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    val allBooks: StateFlow<List<Book>> = repository.getAllBooks()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    private val _books = MutableStateFlow<List<Book>>(emptyList())
+    val books: StateFlow<List<Book>> = _books
+
+
+    fun loadOwnBooks(){
+        val  uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        viewModelScope.launch {
+            repository.getBooksByOwner(uid).collect {
+                _books.value = it
+            }
+        }
+    }
 
     var title by mutableStateOf("")
         private set
@@ -55,7 +70,8 @@ class LibraryViewModel(
                 description = description,
                 genre = genre,
                 imageUri = null,
-                ownerId = currentUser.uid  // Aquí asignamos el dueño
+                ownerId = currentUser.uid,  // Aquí asignamos el dueño
+                ownerName = currentUser.displayName ?: ""
             )
             viewModelScope.launch {
                 repository.addBook(book)
@@ -63,7 +79,7 @@ class LibraryViewModel(
                 onSuccess() // Para ejecutar algo después de guardar, opcional
             }
         } else {
-            // Aquí podrías manejar caso sin usuario logueado si querés
+            ///
         }
     }
 

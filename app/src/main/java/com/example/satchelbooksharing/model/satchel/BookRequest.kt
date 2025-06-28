@@ -1,6 +1,7 @@
 package com.example.satchelbooksharing.model.satchel
 
 data class BookRequest(
+    var id: String = "",
     val requestId: String = "",
     val bookId: String = "",
     val bookTitle: String = "",
