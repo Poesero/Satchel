@@ -32,7 +32,7 @@ import com.example.satchelbooksharing.data.LibraryRepository
 import com.example.satchelbooksharing.data.LocalLibraryRepository
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.model.satchel.Genre
-import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
+import com.example.satchelbooksharing.navigation.ScreensRoute
 import com.example.satchelbooksharing.ui.satchel.sharedElements.AppButton
 import com.example.satchelbooksharing.ui.satchel.sharedElements.BookCard
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer

@@ -22,6 +22,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.satchelbooksharing.R
 import com.example.satchelbooksharing.data.FirestoreRequestRepository
 import com.example.satchelbooksharing.model.satchel.Book
+import com.example.satchelbooksharing.model.satchel.BookRequest
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.RequestToggleButton
 import com.example.satchelbooksharing.viewModel.satchel.RequestViewModel
@@ -77,19 +78,18 @@ private fun BookDetailContent(navController: NavController, book: Book) {
     )
     val requestRepo = remember { FirestoreRequestRepository() }
     val coroutineScope = rememberCoroutineScope()
-    val isRequested = remember { mutableStateOf(false) }
     val userId = FirebaseAuth.getInstance().currentUser?.uid
     val ownerId = book.ownerId
+    var activeRequest by remember { mutableStateOf<BookRequest?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(book.id) {
         userId?.let {
-            isRequested.value = requestViewModel.hasRequested(book.id, it)
+            activeRequest = requestRepo.getActiveRequest(book.id, it)
         }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Contenido principal con peso
         Column(modifier = Modifier.weight(1f)) {
             Row(
                 modifier = Modifier
@@ -164,34 +164,71 @@ private fun BookDetailContent(navController: NavController, book: Book) {
                     ) {
                         Text("Borrar")
                     }
-                } else if (userId != null && ownerId != null && userId != ownerId) {
+                } else if (userId != null && ownerId != null && userId != ownerId && book.available) {
                     RequestToggleButton(
-                        requested = isRequested.value,
+                        requested = activeRequest != null,
                         onToggle = { requested ->
                             coroutineScope.launch {
                                 if (requested) {
-                                    requestRepo.createRequestAndChat(book, userId)
-                                    val chatId = "${book.id}_$userId"
-                                    navController.navigate("chat_screen/$chatId")
+                                    requestRepo.createRequestAndChat(book, userId!!)
+                                    activeRequest = requestRepo.getActiveRequest(book.id, userId)
                                 } else {
-                                    requestRepo.cancelRequest(book, userId)
+                                    requestRepo.cancelRequest(book, userId!!)
+                                    activeRequest = null
                                 }
-                                isRequested.value = requested
                             }
                         }
                     )
-                }
 
-                Badge {
-                    Text(text = if (book.isAvailable) "Disponible" else "No disponible")
+                }
+            }
+            Badge {
+                Text(text = if (book.available) "Disponible" else "No disponible")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            activeRequest?.let { request ->
+                when {
+                    userId == request.ownerId && request.status == "accepted" && !request.delivered -> {
+                        Button(onClick = {
+                            coroutineScope.launch {
+                                Firebase.firestore.collection("requests").document(request.id)
+                                    .update("delivered", true, "status", "delivered")
+                                    .await()
+                                activeRequest = request.copy(delivered = true, status = "delivered")
+                            }
+                        }) {
+                            Text("Confirmar entrega")
+                        }
+                    }
+                    userId == request.requesterId && request.delivered && !request.returned -> {
+                        Button(onClick = {
+                            coroutineScope.launch {
+                                Firebase.firestore.collection("requests").document(request.id)
+                                    .update("returned", true, "status", "returned")
+                                    .await()
+
+                                Firebase.firestore.collection("books").document(book.id)
+                                    .update("available", true)
+                                    .await()
+
+                                activeRequest = request.copy(returned = true, status = "returned")
+                                book.available = true
+                            }
+                        }) {
+                            Text("Confirmar devolución")
+                        }
+                    }
+                }
+            }
+            LaunchedEffect(book.id, userId) {
+                if (userId != null) {
+                    activeRequest = requestRepo.getActiveRequest(book.id, userId)
                 }
             }
         }
-
-        // Footer fijo abajo
         Footer(navController = navController)
-
-        // Diálogo de confirmación
+    }
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
@@ -216,6 +253,3 @@ private fun BookDetailContent(navController: NavController, book: Book) {
             )
         }
     }
-}
-
-

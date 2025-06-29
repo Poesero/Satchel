@@ -2,7 +2,6 @@ package com.example.satchelbooksharing.model.satchel
 
 data class BookRequest(
     var id: String = "",
-    val requestId: String = "",
     val bookId: String = "",
     val bookTitle: String = "",
     val requesterId: String = "",
@@ -10,8 +9,9 @@ data class BookRequest(
     val ownerId: String = "",
     val ownerName: String = "",
     val chatId: String = "",
-    val accepted: Boolean = false,
     val status: String = "pending",
+    val delivered: Boolean = false,
+    val returned: Boolean = false,
     val timestamp: Long = System.currentTimeMillis()
 )
 { }

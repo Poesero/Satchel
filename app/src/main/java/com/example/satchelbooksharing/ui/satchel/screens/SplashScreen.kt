@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
+import com.example.satchelbooksharing.navigation.ScreensRoute
 import com.example.satchelbooksharing.viewModel.satchel.MainViewModel
 import kotlinx.coroutines.delay
 

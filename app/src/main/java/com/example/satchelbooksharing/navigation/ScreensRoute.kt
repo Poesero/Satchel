@@ -1,4 +1,4 @@
-package com.example.satchelbooksharing.ui.satchel.navigation
+package com.example.satchelbooksharing.navigation
 
 sealed class ScreensRoute(val route: String){
     object ScreenSplashRoute : ScreensRoute(route = "Splash")

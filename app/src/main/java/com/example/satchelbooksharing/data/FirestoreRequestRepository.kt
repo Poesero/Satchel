@@ -36,8 +36,9 @@ class FirestoreRequestRepository : RequestRepository {
         val ownerName = ownerSnapshot.getString("name") ?: "Dueño"
         val requesterName = requesterSnapshot.getString("name") ?: "Solicitante"
 
+        val requestDoc = requestCollection.document()
         val request = BookRequest(
-            requestId = UUID.randomUUID().toString(),
+            id = requestDoc.id,
             bookId = book.id,
             bookTitle = book.title,
             requesterId = requesterId,
@@ -47,7 +48,7 @@ class FirestoreRequestRepository : RequestRepository {
             chatId = chatId
         )
 
-        requestCollection.document(request.requestId).set(request).await()
+        requestDoc.set(request).await()
     }
 
     override suspend fun cancelRequest(book: Book, requesterId: String) {
@@ -62,27 +63,46 @@ class FirestoreRequestRepository : RequestRepository {
         }
     }
 
-    override suspend fun acceptRequest(bookId: String) {
+    override suspend fun acceptRequest(bookId: String): String? {
         val requestSnapshot = requestCollection
             .whereEqualTo("bookId", bookId)
             .whereEqualTo("status", "pending")
             .get()
             .await()
 
-        if (requestSnapshot.isEmpty) return
+        if (requestSnapshot.isEmpty) return null
 
         val requestDoc = requestSnapshot.documents.first()
         val requestRef = requestDoc.reference
+        val requestData = requestDoc.data ?: return null
+
+        val requesterId = requestData["requesterId"] as? String ?: return null
+        val ownerId = requestData["ownerId"] as? String ?: return null
+        val chatId = "${bookId}_$requesterId"
+
         val bookRef = booksCollection.document(bookId)
+        val chatRef = Firebase.firestore.collection("chats").document(chatId)
+
         Firebase.firestore.runBatch { batch ->
             batch.update(requestRef, mapOf(
                 "accepted" to true,
                 "status" to "accepted",
                 "timestamp" to System.currentTimeMillis()
             ))
-            batch.update(bookRef, "disponible", false)
+            batch.update(bookRef, "available", false)
+            batch.set(chatRef, mapOf(
+                "chatId" to chatId,
+                "bookId" to bookId,
+                "ownerId" to ownerId,
+                "requesterId" to requesterId,
+                "active" to true,
+                "timestamp" to System.currentTimeMillis()
+            ))
         }.await()
+
+        return requesterId
     }
+
 
 
     override fun getLoansGivenBy(userId: String): Flow<List<BookRequest>> = callbackFlow {
@@ -118,4 +138,20 @@ class FirestoreRequestRepository : RequestRepository {
 
         awaitClose { listener.remove() }
     }
+
+    suspend fun getActiveRequest(bookId: String, userId: String): BookRequest? {
+        val snapshot = Firebase.firestore.collection("requests")
+            .whereEqualTo("bookId", bookId)
+            .get()
+            .await()
+
+        return snapshot.documents
+            .mapNotNull { it.toObject(BookRequest::class.java)?.apply { id = it.id } }
+            .firstOrNull {
+                (it.requesterId == userId || it.ownerId == userId) && it.status != "pending"
+            }
+    }
+
+
+
 }

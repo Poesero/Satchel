@@ -7,12 +7,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
 
 @Composable
 fun HomeScreen(navController: NavController, modifier: Modifier = Modifier) {
+
     Column (
         modifier = Modifier.fillMaxSize()
     ) {

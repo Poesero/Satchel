@@ -1,4 +1,4 @@
-package com.example.satchelbooksharing.ui.satchel.navigation
+package com.example.satchelbooksharing.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState

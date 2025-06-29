@@ -8,7 +8,7 @@ data class Book(
     var description: String = "",
     var genre: Genre = Genre.OTHER,
     val imageUri: String? = null,
-    var isAvailable: Boolean = true,
+    var available: Boolean = true,
     var ownerId: String ="",
     val ownerName: String ="",
     @get:Exclude

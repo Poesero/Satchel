@@ -9,8 +9,8 @@ import com.example.satchelbooksharing.model.satchel.BookRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class ProfileViewModel : ViewModel() {
 
@@ -24,7 +24,6 @@ class ProfileViewModel : ViewModel() {
     val prestamosDado = mutableStateOf<List<BookRequest>>(emptyList())
     val prestamosRecibido = mutableStateOf<List<BookRequest>>(emptyList())
 
-
     fun cargarRequestsPendientes() {
         val userId = auth.currentUser?.uid ?: return
 
@@ -34,7 +33,7 @@ class ProfileViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { result ->
                 val lista = result.mapNotNull { doc ->
-                    doc.toObject(BookRequest::class.java).copy(requestId = doc.id)
+                    doc.toObject(BookRequest::class.java).copy(id = doc.id)
                 }
                 _requestsPendientes.value = lista
             }
@@ -56,25 +55,29 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun aceptarRequest(request: BookRequest) {
-        val requestRef = db.collection("requests").document(request.requestId)
+    suspend fun aceptarRequest(request: BookRequest): String? {
+        val requestRef = db.collection("requests").document(request.id)
         val libroRef = db.collection("books").document(request.bookId)
+
+        val requestSnapshot = requestRef.get().await()
+        val requesterId = requestSnapshot.getString("requesterId") ?: return null
 
         db.runBatch { batch ->
             batch.update(requestRef, "status", "accepted")
-            batch.update(libroRef, "disponible", false)
-        }.addOnSuccessListener {
-            cargarRequestsPendientes()
-            cargarPrestamos()
+            batch.update(libroRef, "available", false)
+        }.await()
 
-        }
+        cargarRequestsPendientes()
+        cargarPrestamos()
+
+        return requesterId
     }
 
-    fun rechazarRequest(request: BookRequest) {
-        db.collection("requests").document(request.requestId)
+    suspend fun rechazarRequest(request: BookRequest) {
+        db.collection("requests").document(request.id)
             .update("status", "rejected")
-            .addOnSuccessListener {
-                cargarRequestsPendientes()
-            }
+            .await()
+
+        cargarRequestsPendientes()
     }
 }

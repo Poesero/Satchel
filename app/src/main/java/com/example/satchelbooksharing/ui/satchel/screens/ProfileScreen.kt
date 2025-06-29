@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,30 +46,42 @@ import com.example.satchelbooksharing.ui.satchel.sharedElements.PrestamosSwipeVi
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyContainer
 import com.example.satchelbooksharing.viewModel.satchel.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
 @Composable
 fun ProfileScreen(navController: NavController) {
     val viewModel: ProfileViewModel = viewModel()
     val solicitudes = viewModel.requestsPendientes.value
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.cargarRequestsPendientes()
         viewModel.cargarPrestamos()
     }
 
-
-    Column (
+    Column(
         modifier = Modifier.fillMaxSize()
     ) {
         ProfileHeader()
 
         SolicitudesPendientesSection(
             solicitudes = solicitudes,
-            onAceptar = { viewModel.aceptarRequest(it) },
-            onRechazar = { viewModel.rechazarRequest(it) }
+            onAceptar = { solicitud ->
+                coroutineScope.launch {
+                    val requesterId = viewModel.aceptarRequest(solicitud)
+                    if (requesterId != null) {
+                        val chatId = "${solicitud.bookId}_$requesterId"
+                        navController.navigate("chat_screen/$chatId")
+                    }
+                }
+            },
+            onRechazar = { solicitud ->
+                coroutineScope.launch {
+                    viewModel.rechazarRequest(solicitud)
+                }
+            }
         )
-
 
         Column(
             modifier = Modifier
@@ -82,13 +95,11 @@ fun ProfileScreen(navController: NavController) {
                         recibidos = viewModel.prestamosRecibido.value
                     )
                 }
-
             }
         }
 
         Footer(navController = navController)
     }
-
 }
 
 @Composable
@@ -149,11 +160,11 @@ fun SolicitudesPendientesSection(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
-
-        // Contenedor clickable
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

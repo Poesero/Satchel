@@ -68,7 +68,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import androidx.navigation.testing.TestNavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
+import com.example.satchelbooksharing.navigation.ScreensRoute
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelTheme
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.pager.HorizontalPager

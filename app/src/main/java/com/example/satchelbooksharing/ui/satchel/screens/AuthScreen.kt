@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.satchelbooksharing.R
 import com.example.satchelbooksharing.model.satchel.Profile
-import com.example.satchelbooksharing.ui.satchel.navigation.ScreensRoute
+import com.example.satchelbooksharing.navigation.ScreensRoute
 import com.example.satchelbooksharing.viewModel.satchel.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
