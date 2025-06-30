@@ -92,8 +92,10 @@ fun ProfileScreen(navController: NavController) {
                 SatchelBodyContainer(Modifier.weight(1f)) {
                     PrestamosSwipeView(
                         prestados = viewModel.prestamosDado.value,
-                        recibidos = viewModel.prestamosRecibido.value
+                        recibidos = viewModel.prestamosRecibido.value,
+                        navController = navController
                     )
+
                 }
             }
         }

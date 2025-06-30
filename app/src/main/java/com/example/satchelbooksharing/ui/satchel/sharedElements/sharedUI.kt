@@ -331,7 +331,8 @@ fun RequestToggleButton(
 @Composable
 fun PrestamosSwipeView(
     prestados: List<BookRequest>,
-    recibidos: List<BookRequest>
+    recibidos: List<BookRequest>,
+    navController: NavController
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Prestados", "Recibidos")
@@ -353,15 +354,24 @@ fun PrestamosSwipeView(
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(lista) { request ->
+                    val chatId = "${request.bookId}_${request.requesterId}"
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .clickable {
+                                navController.navigate("chat_screen/$chatId")
+                            },
                         elevation = CardDefaults.cardElevation(2.dp)
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text("📖 ${request.bookTitle}")
-                            Text(if (selectedTab == 0) "📤 Prestado a: ${request.requesterName}" else "📥 Prestado por: ${request.ownerName}")
+                            Text(
+                                if (selectedTab == 0)
+                                    "📤 Prestado a: ${request.requesterName}"
+                                else
+                                    "📥 Prestado por: ${request.ownerName}"
+                            )
                         }
                     }
                 }
