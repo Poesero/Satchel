@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,12 +29,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.satchelbooksharing.model.satchel.Message
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun ChatScreen(navController: NavController, chatId: String) {
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    val db = Firebase.firestore
+    val messages = remember { mutableStateListOf<Message>() }
+    var newMessage by remember { mutableStateOf("") }
+    val listState = rememberLazyListState()
+
+    // Escuchar los mensajes en tiempo real
+    LaunchedEffect(chatId) {
+        db.collection("chats").document(chatId).collection("messages")
+            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val nuevos = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(Message::class.java)
+                    }
+                    messages.clear()
+                    messages.addAll(nuevos)
+                }
+            }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header con texto de chatId
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -40,33 +69,37 @@ fun ChatScreen(navController: NavController, chatId: String) {
             Text("Chat con ID: $chatId", style = MaterialTheme.typography.titleMedium)
         }
 
-        // Simulación de mensajes
-        val messages = remember {
-            mutableStateListOf(
-                "Hola, ¿seguís queriendo el libro?",
-                "Sí, me interesa mucho. ¿Dónde podríamos encontrarnos?"
-            )
-        }
-        var newMessage by remember { mutableStateOf("") }
-
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            state = listState
         ) {
-            messages.forEach { msg ->
-                Text(
-                    text = msg,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp))
-                        .padding(8.dp)
-                )
+            items(messages) { msg ->
+                val isMe = msg.senderId == currentUserId
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
+                ) {
+                    Text(
+                        text = msg.text,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .background(
+                                color = if (isMe) Color(0xFFD0F0C0) else Color.LightGray,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
+                    )
+                }
             }
         }
 
-        // Campo para enviar mensaje
+        // Auto-scroll al final cuando llegan mensajes
+        LaunchedEffect(messages.size) {
+            listState.animateScrollToItem(messages.size)
+        }
+
         Row(
             modifier = Modifier
                 .padding(16.dp)
@@ -81,9 +114,25 @@ fun ChatScreen(navController: NavController, chatId: String) {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = {
-                if (newMessage.isNotBlank()) {
-                    messages.add("Tú: $newMessage")
+                val text = newMessage.trim()
+                if (text.isNotEmpty()) {
+                    val message = mapOf(
+                        "senderId" to currentUserId,
+                        "text" to text,
+                        "timestamp" to System.currentTimeMillis()
+                    )
+                    db.collection("chats").document(chatId)
+                        .collection("messages")
+                        .add(message)
                     newMessage = ""
+
+                    // Actualizar lastMessage del chat (opcional)
+                    db.collection("chats").document(chatId).update(
+                        mapOf(
+                            "lastMessage" to text,
+                            "lastTimestamp" to System.currentTimeMillis()
+                        )
+                    )
                 }
             }) {
                 Text("Enviar")
