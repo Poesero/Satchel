@@ -5,6 +5,7 @@ sealed class ScreensRoute(val route: String){
     object ScreenAuthRoute : ScreensRoute(route = "AuthScreen")
     object ScreenHomeRoute : ScreensRoute(route = "Home")
     object ScreenLibraryRoute : ScreensRoute(route = "Library")
+    object ScreenUserLibraryRoute: ScreensRoute(route = "UserLibrary/{userId}")
     object ScreenSearchRoute : ScreensRoute(route = "Search")
     object ScreenProfileRoute : ScreensRoute(route = "Profile")
     object ScreenBookRoute : ScreensRoute(route = "Book")

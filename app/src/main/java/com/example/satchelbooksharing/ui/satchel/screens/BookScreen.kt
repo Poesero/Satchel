@@ -1,15 +1,19 @@
 package com.example.satchelbooksharing.ui.satchel.screens
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -18,9 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.satchelbooksharing.R
 import com.example.satchelbooksharing.data.FirestoreRequestRepository
+import com.example.satchelbooksharing.data.UserRepository
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.model.satchel.BookRequest
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
@@ -73,15 +79,21 @@ fun BookScreen(navController: NavController, bookId: String) {
 
 @Composable
 private fun BookDetailContent(navController: NavController, book: Book) {
-    val requestViewModel: RequestViewModel = viewModel(
-        factory = RequestViewModelFactory(FirestoreRequestRepository())
-    )
     val requestRepo = remember { FirestoreRequestRepository() }
     val coroutineScope = rememberCoroutineScope()
     val userId = FirebaseAuth.getInstance().currentUser?.uid
     val ownerId = book.ownerId
     var activeRequest by remember { mutableStateOf<BookRequest?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    val userRepository = remember { UserRepository() }
+    var ownerPhotoUrl by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(ownerId) {
+        val url = userRepository.getOwnerPhotoUrl(ownerId)
+        Log.d("BookScreen", "URL de foto del dueño: $url")
+        ownerPhotoUrl = url
+    }
 
     LaunchedEffect(book.id) {
         userId?.let {
@@ -91,6 +103,12 @@ private fun BookDetailContent(navController: NavController, book: Book) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.weight(1f)) {
+            OwnerInfoPill(
+                ownerId = ownerId,
+                ownerName = book.ownerName,
+                ownerPhotoUrl = ownerPhotoUrl,
+                navController = navController
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -179,9 +197,9 @@ private fun BookDetailContent(navController: NavController, book: Book) {
                             }
                         }
                     )
-
                 }
             }
+
             Badge {
                 Text(text = if (book.available) "Disponible" else "No disponible")
             }
@@ -189,7 +207,7 @@ private fun BookDetailContent(navController: NavController, book: Book) {
 
             activeRequest?.let { request ->
                 when {
-                    userId == request.ownerId && request.status == "accepted" && !request.delivered -> {
+                    userId == request.requesterId && request.status == "accepted" && request.delivered != true -> {
                         Button(onClick = {
                             coroutineScope.launch {
                                 Firebase.firestore.collection("requests").document(request.id)
@@ -198,10 +216,10 @@ private fun BookDetailContent(navController: NavController, book: Book) {
                                 activeRequest = request.copy(delivered = true, status = "delivered")
                             }
                         }) {
-                            Text("Confirmar entrega")
+                            Text("Confirmar recepción")
                         }
                     }
-                    userId == request.requesterId && request.delivered && !request.returned -> {
+                    userId == request.ownerId && request.delivered == true && request.returned != true -> {
                         Button(onClick = {
                             coroutineScope.launch {
                                 Firebase.firestore.collection("requests").document(request.id)
@@ -212,6 +230,8 @@ private fun BookDetailContent(navController: NavController, book: Book) {
                                     .update("available", true)
                                     .await()
 
+                                requestRepo.deleteRequestChat(request.chatId)
+
                                 activeRequest = request.copy(returned = true, status = "returned")
                                 book.available = true
                             }
@@ -221,35 +241,68 @@ private fun BookDetailContent(navController: NavController, book: Book) {
                     }
                 }
             }
+
             LaunchedEffect(book.id, userId) {
                 if (userId != null) {
                     activeRequest = requestRepo.getActiveRequest(book.id, userId)
                 }
             }
         }
+
         Footer(navController = navController)
     }
-        if (showDeleteDialog) {
-            AlertDialog(
-                onDismissRequest = { showDeleteDialog = false },
-                title = { Text("¿Confirmar borrado?") },
-                text = { Text("¿Estás seguro de que querés borrar este libro? Esta acción no se puede deshacer.") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showDeleteDialog = false
-                        coroutineScope.launch {
-                            Firebase.firestore.collection("books").document(book.id).delete().await()
-                            navController.popBackStack()
-                        }
-                    }) {
-                        Text("Sí")
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("¿Confirmar borrado?") },
+            text = { Text("¿Estás seguro de que querés borrar este libro? Esta acción no se puede deshacer.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                    coroutineScope.launch {
+                        Firebase.firestore.collection("books").document(book.id).delete().await()
+                        navController.popBackStack()
                     }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDeleteDialog = false }) {
-                        Text("Cancelar")
-                    }
+                }) {
+                    Text("Sí")
                 }
-            )
-        }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
+}
+
+@Composable
+fun OwnerInfoPill(
+    ownerId: String,
+    ownerName: String,
+    ownerPhotoUrl: String?,
+    navController: NavController
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .clip(RoundedCornerShape(50))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable {
+                navController.navigate("UserLibrary/$ownerId")
+            }
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+    ) {
+        AsyncImage(
+            model = ownerPhotoUrl ?: R.drawable.noimagephoto,
+            contentDescription = "Foto del dueño",
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = ownerName, style = MaterialTheme.typography.bodyMedium)
+    }
+}

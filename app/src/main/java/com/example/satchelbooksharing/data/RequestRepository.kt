@@ -9,6 +9,7 @@ interface RequestRepository {
     suspend fun createRequestAndChat(book: Book, requesterId: String)
     suspend fun cancelRequest(book: Book, requesterId: String)
     suspend fun acceptRequest(bookId: String): String?
+    suspend fun deleteRequestChat(chatId: String)
     fun getLoansGivenBy(userId: String): Flow<List<BookRequest>>
     fun getLoansReceivedBy(userId: String): Flow<List<BookRequest>>
 }

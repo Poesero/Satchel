@@ -7,9 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.example.satchelbooksharing.data.FirestoreLibraryRepository
-import com.example.satchelbooksharing.data.LocalLibraryRepository
-import com.example.satchelbooksharing.model.satchel.Book
+
 import com.example.satchelbooksharing.ui.satchel.screens.BookScreen
 import com.example.satchelbooksharing.ui.satchel.screens.ChatScreen
 import com.example.satchelbooksharing.ui.satchel.screens.HomeScreen
@@ -17,6 +15,7 @@ import com.example.satchelbooksharing.ui.satchel.screens.LibraryScreen
 import com.example.satchelbooksharing.ui.satchel.screens.NewBookScreen
 import com.example.satchelbooksharing.ui.satchel.screens.ProfileScreen
 import com.example.satchelbooksharing.ui.satchel.screens.SearchScreen
+import com.example.satchelbooksharing.ui.satchel.screens.UserLibraryScreen
 import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
 
 fun NavGraphBuilder.appGraph(navController: NavController,libraryViewModel: LibraryViewModel){
@@ -30,6 +29,13 @@ fun NavGraphBuilder.appGraph(navController: NavController,libraryViewModel: Libr
         }
         composable(route = ScreensRoute.ScreenLibraryRoute.route){
             LibraryScreen(navController = navController, libraryViewModel = libraryViewModel)
+        }
+        composable(
+            route = "UserLibrary/{userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userId = requireNotNull(backStackEntry.arguments?.getString("userId"))
+            UserLibraryScreen(navController = navController, userId = userId)
         }
         composable(route = ScreensRoute.ScreenProfileRoute.route){
             ProfileScreen(navController = navController)

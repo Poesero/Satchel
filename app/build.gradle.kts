@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.coil.compose)
 
+
     // Navigation & ViewModel Compose
     implementation("androidx.navigation:navigation-compose:2.7.5")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")

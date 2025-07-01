@@ -103,12 +103,21 @@ class FirestoreRequestRepository : RequestRepository {
         return requesterId
     }
 
+    override suspend fun deleteRequestChat(chatId: String) {
+        val chatRef = Firebase.firestore.collection("chats").document(chatId)
+        val messages = chatRef.collection("messages").get().await()
+        for (doc in messages.documents) {
+            doc.reference.delete().await()
+        }
+        chatRef.delete().await()
+    }
+
 
 
     override fun getLoansGivenBy(userId: String): Flow<List<BookRequest>> = callbackFlow {
         val listener = requestCollection
             .whereEqualTo("ownerId", userId)
-            .whereEqualTo("status", "accepted")
+            .whereIn("status", listOf("accepted", "delivered"))
             .addSnapshotListener { snapshot, error ->
                 if (error != null || snapshot == null) {
                     close(error ?: Exception("Unknown error"))
@@ -125,7 +134,7 @@ class FirestoreRequestRepository : RequestRepository {
     override fun getLoansReceivedBy(userId: String): Flow<List<BookRequest>> = callbackFlow {
         val listener = requestCollection
             .whereEqualTo("requesterId", userId)
-            .whereEqualTo("status", "accepted")
+            .whereIn("status", listOf("accepted", "delivered"))
             .addSnapshotListener { snapshot, error ->
                 if (error != null || snapshot == null) {
                     close(error ?: Exception("Unknown error"))
@@ -147,10 +156,12 @@ class FirestoreRequestRepository : RequestRepository {
 
         return snapshot.documents
             .mapNotNull { it.toObject(BookRequest::class.java)?.apply { id = it.id } }
-            .firstOrNull {
+            .filter {
                 (it.requesterId == userId || it.ownerId == userId) && it.status != "pending"
             }
+            .maxByOrNull { it.timestamp }
     }
+
 
 
 
