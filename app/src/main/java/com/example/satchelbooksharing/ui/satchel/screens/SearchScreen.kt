@@ -1,10 +1,12 @@
 package com.example.satchelbooksharing.ui.satchel.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,49 +62,59 @@ fun SearchScreen(navController: NavController, allBooks: List<Book>) {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp, bottom = 5.dp)
-        ) {
-            SearchField(
-                value = query,
-                onValueChange = {
-                    query = it
-                },
-                onSearch = {
-                    doSearch()
-                }
-            )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        //Spacer(modifier = Modifier.height(12.dp))
+
+        Box(modifier = Modifier.height(60.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomStart)
+            ) {
+                SearchField(
+                    value = query,
+                    onValueChange = { query = it },
+                    onSearch = { doSearch() },
+                )
+            }
+
+
         }
 
-        SatchelBodyContainer(modifier = Modifier.weight(1f)) {
-            if (filteredBooks.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    val msg = if (query.text.isNotBlank()) {
-                        "No se encontraron libros que contengan \"${query.text}\"."
-                    } else {
-                        "Toda aventura comienza con un solo paso."
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(5.dp, vertical = 12.dp)
+        ) {
+            SatchelBodyContainer {
+                if (filteredBooks.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val msg = if (query.text.isNotBlank()) {
+                            "No se encontraron libros que contengan \"${query.text}\"."
+                        } else {
+                            "Toda aventura comienza con un solo paso."
+                        }
+                        Text(text = msg)
                     }
-                    Text(text = msg)
-                }
-            } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 24.dp),
-                    contentPadding = PaddingValues(vertical = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    items(filteredBooks) { book ->
-                        BookCard(book = book) {
-                            navController.navigate("Book/${book.id}")
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(5.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        items(filteredBooks) { book ->
+                            BookCard(book = book) {
+                                navController.navigate("Book/${book.id}")
+                            }
                         }
                     }
                 }

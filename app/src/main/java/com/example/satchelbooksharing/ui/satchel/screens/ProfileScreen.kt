@@ -44,6 +44,8 @@ import com.example.satchelbooksharing.model.satchel.BookRequest
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.PrestamosSwipeView
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyContainer
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelGrey
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelWhite
 import com.example.satchelbooksharing.viewModel.satchel.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -61,7 +63,9 @@ fun ProfileScreen(navController: NavController) {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         ProfileHeader()
 
@@ -122,7 +126,7 @@ fun ProfileHeader() {
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    color = Color.Cyan,
+                    color = SatchelWhite,
                     shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp),
                 ),
             horizontalArrangement = Arrangement.End,
@@ -131,7 +135,7 @@ fun ProfileHeader() {
             Box {
                 Button(
                     onClick = { menuExpanded = true },
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier.fillMaxHeight(),
                 ) {
                     Icon(Icons.Default.Settings, contentDescription = null)
                 }
@@ -171,7 +175,7 @@ fun SolicitudesPendientesSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                .background(SatchelGrey)
                 .clickable { expanded = !expanded }
                 .padding(16.dp)
         ) {
@@ -181,7 +185,8 @@ fun SolicitudesPendientesSection(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp)
+                    .padding(top = 2.dp)
+
             ) {
                 if (solicitudes.isEmpty()) {
                     Text("No hay solicitudes pendientes.")
@@ -193,7 +198,7 @@ fun SolicitudesPendientesSection(
                                 .padding(vertical = 4.dp),
                             elevation = CardDefaults.cardElevation(2.dp)
                         ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
+                            Column(modifier = Modifier.padding(12.dp).background(SatchelGrey)) {
                                 Text("📘 Libro: ${solicitud.bookTitle}")
                                 Text("🙋 Solicitante: ${solicitud.requesterName}")
                                 Row(

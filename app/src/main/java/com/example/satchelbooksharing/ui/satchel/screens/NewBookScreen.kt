@@ -1,9 +1,13 @@
 package com.example.satchelbooksharing.ui.satchel.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +19,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -30,10 +35,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.satchelbooksharing.data.FirestoreLibraryRepository
-import com.example.satchelbooksharing.data.LibraryRepository
-import com.example.satchelbooksharing.data.LocalLibraryRepository
 import com.example.satchelbooksharing.model.satchel.Genre
+import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyContainer
 import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
 import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModelFactory
 
@@ -42,85 +45,84 @@ fun NewBookScreen(
     onBookAdded: () -> Unit = {},
     libraryViewModel: LibraryViewModel,
     navController: NavController,
-
 ) {
-
+    val isFormValid = libraryViewModel.isFormValid
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(top = 80.dp, bottom = 150.dp),
         contentAlignment = Alignment.Center
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+        SatchelBodyContainer {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(13.dp)
-                    .padding(2.dp, vertical = 10.dp)) {
-
-            TextField(value = libraryViewModel.title, onValueChange = {
-                libraryViewModel.onTitleChanged(it)
-            },
-                label = { Text(text = "title")},
-                singleLine = true
-            )
-
-            TextField(value = libraryViewModel.author, onValueChange = {
-                libraryViewModel.onAuthorChanged(it)
-            },
-                label = { Text(text = "author")},
-                singleLine = true
-            )
-
-            TextField(value = libraryViewModel.description, onValueChange = {
-                libraryViewModel.onDescriptionChanged(it)
-            },
-                label = { Text(text = "description")},
-                maxLines = 4,
-                modifier = Modifier.height(100.dp)
-            )
-
-            GenreDropdownMenu(
-                genreValue = libraryViewModel.genre,
-                onGenreSelected = { libraryViewModel.onGenreChanged(it)}
-            )
-
-            val context = LocalContext.current
-
-            Button(onClick = {
-                libraryViewModel.saveBook {
-                    Toast.makeText(context, "New book added", Toast.LENGTH_SHORT).show()
-                    navController.popBackStack()
+                    .padding(2.dp, vertical = 10.dp)
+            ) {
+                TextField(
+                    value = libraryViewModel.title,
+                    onValueChange = { libraryViewModel.onTitleChanged(it) },
+                    label = { Text(text = "title") },
+                    singleLine = true
+                )
+                TextField(
+                    value = libraryViewModel.author,
+                    onValueChange = { libraryViewModel.onAuthorChanged(it) },
+                    label = { Text(text = "author") },
+                    singleLine = true
+                )
+                TextField(
+                    value = libraryViewModel.description,
+                    onValueChange = { libraryViewModel.onDescriptionChanged(it) },
+                    label = { Text(text = "description") },
+                    maxLines = 4,
+                    modifier = Modifier.height(100.dp)
+                )
+                GenreDropdownMenu(
+                    genreValue = libraryViewModel.genre,
+                    onGenreSelected = { libraryViewModel.onGenreChanged(it) }
+                )
+                Row(modifier = Modifier
+                    .fillMaxWidth(0.75f),
+                    horizontalArrangement = Arrangement.SpaceBetween){
+                    val context = LocalContext.current
+                    Button(onClick = {
+                        libraryViewModel.saveBook {
+                            Toast.makeText(context, "New book added", Toast.LENGTH_SHORT).show()
+                            navController.popBackStack()
+                        }
+                    },
+                        enabled = isFormValid
+                    ) {
+                        Text(text = "Finish")
+                    }
+                    Button(onClick = { navController.popBackStack() }) {
+                        Text(text = "Cancel")
+                    }
                 }
-            }) {
-                Text(text = "Finish")
             }
-            Button(onClick = {
-                navController.popBackStack()
-            })
-            {
-                Text(text = "Cancel")
-            }
-
-
-
         }
     }
-
 
 }
 
 
-
 @Composable
-fun GenreDropdownMenu(genreValue: Genre, onGenreSelected: (Genre) -> Unit) {
+fun GenreDropdownMenu(
+    genreValue: Genre,
+    onGenreSelected: (Genre) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
-    Box(
-        modifier = Modifier
-            .padding(16.dp)
-    ) {
+    Box(modifier = Modifier.padding(16.dp)) {
         OutlinedTextField(
             value = genreValue.name,
             onValueChange = {},
             readOnly = true,
-            label = { Text("Genre")},
+            label = { Text("Genre") },
             trailingIcon = {
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(Icons.Default.ArrowDropDown, contentDescription = null)
@@ -128,14 +130,13 @@ fun GenreDropdownMenu(genreValue: Genre, onGenreSelected: (Genre) -> Unit) {
             },
             modifier = Modifier.fillMaxWidth()
         )
-
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = {expanded = false}
+            onDismissRequest = { expanded = false }
         ) {
             Genre.entries.forEach { genre ->
                 DropdownMenuItem(
-                    text = { Text(genre.name)},
+                    text = { Text(genre.name) },
                     onClick = {
                         onGenreSelected(genre)
                         expanded = false
@@ -143,24 +144,6 @@ fun GenreDropdownMenu(genreValue: Genre, onGenreSelected: (Genre) -> Unit) {
                 )
             }
         }
-
-
-        /*
-        IconButton(onClick = { expanded = !expanded }) {
-            Icon(Icons.Default.Menu, contentDescription = "More options")
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            menuItemData.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option.name) },
-                    onClick = { }
-                )
-            }
-        }
-        */
     }
 }
 

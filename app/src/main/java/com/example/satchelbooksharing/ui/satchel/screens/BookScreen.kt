@@ -31,6 +31,9 @@ import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.model.satchel.BookRequest
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.RequestToggleButton
+import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBadge
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelGrey
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelOrange2
 import com.example.satchelbooksharing.viewModel.satchel.RequestViewModel
 import com.example.satchelbooksharing.viewModel.satchel.RequestViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
@@ -42,7 +45,6 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun BookScreen(navController: NavController, bookId: String) {
-
     var book by remember { mutableStateOf<Book?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
@@ -55,27 +57,33 @@ fun BookScreen(navController: NavController, bookId: String) {
                 .await()
             book = doc.toObject(Book::class.java)?.apply { id = doc.id }
         } catch (e: Exception) {
-            // Opcional: log o mensaje
             book = null
         } finally {
             isLoading = false
         }
     }
 
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else {
-        book?.let { b ->
-            BookDetailContent(navController = navController, book = b)
-        } ?: run {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Libro no encontrado.")
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else {
+            book?.let { b ->
+                BookDetailContent(navController = navController, book = b)
+            } ?: run {
+                Text(
+                    "Libro no encontrado.",
+                    color = SatchelOrange2,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
     }
 }
+
 
 @Composable
 private fun BookDetailContent(navController: NavController, book: Book) {
@@ -103,29 +111,24 @@ private fun BookDetailContent(navController: NavController, book: Book) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.weight(1f)) {
-            OwnerInfoPill(
-                ownerId = ownerId,
-                ownerName = book.ownerName,
-                ownerPhotoUrl = ownerPhotoUrl,
-                navController = navController
-            )
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                horizontalArrangement = Arrangement.Center
+                    .height(70.dp)
+                    .background(MaterialTheme.colorScheme.tertiary),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = book.title,
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    color = Color.Black,
+                    maxLines = 1
                 )
             }
-
             HorizontalDivider(
                 thickness = 2.dp,
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 2.dp)
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 1.dp)
             )
 
             val painter = if (!book.imageUri.isNullOrEmpty()) {
@@ -138,8 +141,9 @@ private fun BookDetailContent(navController: NavController, book: Book) {
                 painter = painter,
                 contentDescription = null,
                 modifier = Modifier
-                    .width(150.dp)
-                    .height(150.dp)
+                    .padding(top = 5.dp)
+                    .fillMaxWidth(0.33f)
+                    .fillMaxHeight(0.2f)
                     .align(Alignment.CenterHorizontally),
                 contentScale = ContentScale.Crop
             )
@@ -147,16 +151,17 @@ private fun BookDetailContent(navController: NavController, book: Book) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 5.dp)
-                    .background(Color.LightGray, RoundedCornerShape(40.dp))
+                    .fillMaxHeight(0.66f)
+                    .padding(horizontal = 15.dp, vertical = 5.dp)
+                    .background(SatchelGrey, RoundedCornerShape(40.dp))
                     .border(2.dp, Color.Black, RoundedCornerShape(40.dp))
-                    .padding(20.dp),
-                contentAlignment = Alignment.Center
+                    .padding(15.dp),
+                contentAlignment = Alignment.TopStart
             ) {
                 Text(
                     text = book.description,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Black
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium
                 )
             }
 
@@ -166,19 +171,11 @@ private fun BookDetailContent(navController: NavController, book: Book) {
                     .padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.Start
             ) {
-                Badge { Text(book.genre.displayName) }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
                 if (userId != null && ownerId != null && userId == ownerId) {
-                    Button(
-                        onClick = { showDeleteDialog = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    Badge(
+                        modifier = Modifier
+                            .clickable { showDeleteDialog = true }
+                            .padding(end = 3.dp)
                     ) {
                         Text("Borrar")
                     }
@@ -198,11 +195,22 @@ private fun BookDetailContent(navController: NavController, book: Book) {
                         }
                     )
                 }
+
+                SatchelBadge {
+                    Text(book.genre.displayName) }
+
+                SatchelBadge{
+                    Text(text = if (book.available) "Disponible" else "No disponible")
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                OwnerInfoPill(
+                    ownerId = ownerId,
+                    ownerName = book.ownerName,
+                    ownerPhotoUrl = ownerPhotoUrl,
+                    navController = navController
+                )
             }
 
-            Badge {
-                Text(text = if (book.available) "Disponible" else "No disponible")
-            }
             Spacer(modifier = Modifier.height(16.dp))
 
             activeRequest?.let { request ->
@@ -287,13 +295,13 @@ fun OwnerInfoPill(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(top = 8.dp)
+            .height(32.dp)
             .clip(RoundedCornerShape(50))
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable {
                 navController.navigate("UserLibrary/$ownerId")
             }
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(end = 12.dp)
     ) {
         AsyncImage(
             model = ownerPhotoUrl ?: R.drawable.noimagephoto,

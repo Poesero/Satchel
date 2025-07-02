@@ -1,5 +1,6 @@
 package com.example.satchelbooksharing.ui.satchel.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,6 +40,8 @@ import com.example.satchelbooksharing.ui.satchel.sharedElements.BookCard
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyContainer
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelCream
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelCream2
 import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModel
 import com.example.satchelbooksharing.viewModel.satchel.LibraryViewModelFactory
 
@@ -54,6 +58,7 @@ fun LibraryScreen(navController: NavController, libraryViewModel: LibraryViewMod
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Header(navController = navController)
 
@@ -98,7 +103,6 @@ fun LibraryScreen(navController: NavController, libraryViewModel: LibraryViewMod
 
                     items(books) { book ->
                         BookCard(book = book){
-                            println("🟢 Navegando a libro con id: ${book.id}")
                             navController.navigate("Book/${book.id }")
                         }
                     }

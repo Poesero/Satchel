@@ -96,4 +96,10 @@ class LibraryViewModel(
         }
     }
 
+    val isFormValid: Boolean
+        get() = title.isNotBlank() &&
+                author.isNotBlank() &&
+                description.isNotBlank() &&
+                genre != Genre.OTHER
+
 }

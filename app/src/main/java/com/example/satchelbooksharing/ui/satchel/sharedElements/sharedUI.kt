@@ -1,7 +1,11 @@
 package com.example.satchelbooksharing.ui.satchel.sharedElements
 
+import android.content.Context
 import android.net.Uri
 import android.service.autofill.OnClickAction
+import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import com.example.satchelbooksharing.model.satchel.Book
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -74,25 +78,24 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalConfiguration
 import com.example.satchelbooksharing.model.satchel.BookRequest
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelGrey
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelOrange
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelOrange2
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelWhite
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelYellow
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelYellow2
 import com.google.android.gms.auth.api.phone.SmsCodeAutofillClient.PermissionState
-
-/*
-@Composable
-fun TestUi(){
-    Column {
-        Header("Header")
-        SatchelBodyContainer()
-        Footer()
-    }
-}
- */
+import kotlinx.coroutines.delay
 
 @Composable
 fun Header (navController: NavController) {
     Surface(
-
+        color = Color.Transparent,
         tonalElevation = 4.dp,
         modifier = Modifier
             .fillMaxWidth()
@@ -101,7 +104,7 @@ fun Header (navController: NavController) {
         Row (modifier = Modifier
             .fillMaxSize()
             .background(
-                color = Color.Cyan,
+                color = MaterialTheme.colorScheme.tertiary,
                 shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp), ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -128,6 +131,7 @@ fun HeaderPreview() {
 fun Footer (navController: NavController) {
     Surface(
         tonalElevation = 4.dp,
+        color = MaterialTheme.colorScheme.primary,
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
@@ -151,10 +155,6 @@ fun Footer (navController: NavController) {
                 Icon(Icons.Default.Search, contentDescription = null)
 
             }
-            /*
-            Text("© Satchel 2025", fontSize = 14.sp)
-            Text("Hecho con 💙", fontSize = 14.sp)
-            */
         }
     }
 }
@@ -196,7 +196,8 @@ fun SearchField(
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp),
+            .padding(5.dp)
+            .background(MaterialTheme.colorScheme.tertiary),
         value = value,
         singleLine = true,
         leadingIcon = {
@@ -225,19 +226,23 @@ fun SearchPreview(){
 }
 
 @Composable
-fun SatchelBodyContainer(
-    modifier: Modifier = Modifier,
+fun SatchelBodyContainer(modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .clip(RoundedCornerShape(24.dp))
-            .background(Color.LightGray.copy(alpha = 0.5f))
-            .padding(horizontal = 1.dp, vertical = 10.dp)
+            .padding(10.dp,10.dp)
+            .clip(RoundedCornerShape(50.dp))
+            .background(SatchelYellow2)
+            .padding(horizontal = 5.dp, vertical = 5.dp)
     ) {
-        content()
+        Box(modifier = Modifier
+            .padding(horizontal = 7.dp, vertical = 7.dp)
+            .clip(RoundedCornerShape(20.dp))) {
+            content()
+        }
     }
 }
 
@@ -247,10 +252,10 @@ fun BookCard(book: Book, onClick: () -> Unit){
         contentAlignment = Alignment.Center
     ) {
         Card(modifier = Modifier
-            .width(270.dp)
-            .height(290.dp)
+            .width(265.dp)
+            .height(280.dp)
             .clickable { onClick() },
-            elevation = CardDefaults.cardElevation(7.dp),
+            elevation = CardDefaults.cardElevation(3.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.DarkGray
             )
@@ -319,7 +324,9 @@ fun RequestToggleButton(
 ) {
     val toggleState = remember { mutableStateOf(requested) }
 
-    Badge(modifier = Modifier.clickable {
+    Badge(modifier = Modifier
+        .padding(end = 3.dp)
+        .clickable {
         toggleState.value = !toggleState.value
         onToggle(toggleState.value)
     }) {
@@ -379,3 +386,112 @@ fun PrestamosSwipeView(
         }
     }
 }
+
+@Composable
+fun ImageCarousel(
+    imageList: List<Int>,
+    context: Context = LocalContext.current
+) {
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val imageWidth = screenWidth * 0.85f
+    val sidePadding = (screenWidth - imageWidth) / 2
+
+    val currentIndex by remember {
+        derivedStateOf { listState.firstVisibleItemIndex }
+    }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(3000)
+            val nextIndex = (currentIndex + 1) % imageList.size
+            scope.launch {
+                listState.animateScrollToItem(nextIndex)
+            }
+        }
+    }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        LazyRow(
+            state = listState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            contentPadding = PaddingValues(horizontal = sidePadding),
+            horizontalArrangement = Arrangement.spacedBy(40.dp),
+            flingBehavior = rememberSnapFlingBehavior(listState)
+        ) {
+            items(imageList.size) { index ->
+                Image(
+                    painter = painterResource(id = imageList[index]),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(imageWidth)
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable {
+                            Toast.makeText(
+                                context,
+                                "No se pudo acceder al destino, intente más tarde",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            repeat(imageList.size) { index ->
+                val isSelected = index == currentIndex
+                Box(
+                    modifier = Modifier
+                        .size(if (isSelected) 12.dp else 8.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                        )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SatchelBadge(content: @Composable () -> Unit) {
+    Box(modifier = Modifier.padding(end = 3.dp)) {
+        Badge(
+            containerColor = SatchelGrey,
+            contentColor = MaterialTheme.colorScheme.onTertiary
+        ) {
+            content()
+        }
+    }
+}
+
+@Composable
+fun FadingImageSimple(
+    imageRes: Int,
+    isVisible: Boolean,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Fit
+) {
+    val alpha by animateFloatAsState(
+        targetValue = if (isVisible) 0f else 1f,
+        animationSpec = tween(durationMillis = 2899),
+        label = ""
+    )
+
+    Image(
+        painter = painterResource(id = imageRes),
+        contentDescription = null,
+        modifier = modifier.alpha(alpha),
+        contentScale = contentScale
+    )
+}
+
