@@ -23,7 +23,7 @@ class FirestoreLibraryRepository : LibraryRepository {
                 }
 
                 val books = snapshot.documents.mapNotNull { doc ->
-                    doc.toObject(Book::class.java)?.copy(id = doc.id) // ✅ Importante
+                    doc.toObject(Book::class.java)?.copy(id = doc.id)
                 }
 
                 trySend(books)
@@ -35,7 +35,7 @@ class FirestoreLibraryRepository : LibraryRepository {
     override fun getAllBooks(): Flow<List<Book>> = callbackFlow {
         val listener = booksCollection.addSnapshotListener { snapshot, _ ->
             val books = snapshot?.documents?.mapNotNull { doc ->
-                doc.toObject(Book::class.java)?.copy(id = doc.id) // ✅ Importante
+                doc.toObject(Book::class.java)?.copy(id = doc.id)
             } ?: emptyList()
 
             trySend(books)

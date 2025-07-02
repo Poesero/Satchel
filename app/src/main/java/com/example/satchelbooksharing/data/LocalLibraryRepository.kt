@@ -40,7 +40,7 @@ class LocalLibraryRepository : LibraryRepository {
 
     override suspend fun addBook(book: Book) {
         val db = Firebase.firestore
-        val newDoc = db.collection("books").document()   // crea un ID nuevo
+        val newDoc = db.collection("books").document()
         val bookWithId = book.copy(id = newDoc.id)
         newDoc.set(bookWithId)
     }
