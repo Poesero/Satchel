@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -90,7 +91,7 @@ fun ProfileScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(24.dp)
+                .padding(12.dp)
         ) {
             SatchelBodyContainer(Modifier.weight(1f)) {
                 SatchelBodyContainer(Modifier.weight(1f)) {
@@ -117,6 +118,7 @@ fun ProfileHeader() {
     }
 
     Surface(
+        color = Color.Transparent,
         tonalElevation = 4.dp,
         modifier = Modifier
             .fillMaxWidth()
@@ -136,6 +138,7 @@ fun ProfileHeader() {
                 Button(
                     onClick = { menuExpanded = true },
                     modifier = Modifier.fillMaxHeight(),
+                    colors = ButtonDefaults.buttonColors(SatchelWhite)
                 ) {
                     Icon(Icons.Default.Settings, contentDescription = null)
                 }
@@ -196,9 +199,10 @@ fun SolicitudesPendientesSection(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp),
-                            elevation = CardDefaults.cardElevation(2.dp)
+                            elevation = CardDefaults.cardElevation(0.dp),
+                            colors = CardDefaults.cardColors(containerColor = SatchelGrey)
                         ) {
-                            Column(modifier = Modifier.padding(12.dp).background(SatchelGrey)) {
+                            Column(modifier = Modifier.padding(12.dp)) {
                                 Text("📘 Libro: ${solicitud.bookTitle}")
                                 Text("🙋 Solicitante: ${solicitud.requesterName}")
                                 Row(
@@ -207,13 +211,13 @@ fun SolicitudesPendientesSection(
                                 ) {
                                     Button(
                                         onClick = { onAceptar(solicitud) },
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                                     ) {
                                         Text("Aceptar")
                                     }
                                     Button(
                                         onClick = { onRechazar(solicitud) },
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336))
+                                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primaryContainer)
                                     ) {
                                         Text("Rechazar")
                                     }

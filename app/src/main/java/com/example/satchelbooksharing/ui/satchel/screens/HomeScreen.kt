@@ -44,7 +44,6 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier) {
                 .padding(24.dp)
         ) {
             //Contenido principal en algun momento
-            Text("Contenido principal en algun momento")
         }
         
         Footer(navController)

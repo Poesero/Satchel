@@ -82,7 +82,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalConfiguration
+import coil.compose.AsyncImage
 import com.example.satchelbooksharing.model.satchel.BookRequest
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelBrown
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelGrey
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelOrange
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelOrange2
@@ -345,9 +347,12 @@ fun PrestamosSwipeView(
     val tabs = listOf("Prestados", "Recibidos")
 
     Column {
-        TabRow(selectedTabIndex = selectedTab) {
+        TabRow(
+            selectedTabIndex = selectedTab,
+            contentColor = SatchelBrown,
+            containerColor =  SatchelWhite) {
             tabs.forEachIndexed { index, title ->
-                Tab(selected = selectedTab == index, onClick = { selectedTab = index }) {
+                Tab(modifier=Modifier.background(SatchelWhite), selected = selectedTab == index, onClick = { selectedTab = index }) {
                     Text(title, modifier = Modifier.padding(16.dp))
                 }
             }
@@ -495,3 +500,32 @@ fun FadingImageSimple(
     )
 }
 
+@Composable
+fun OwnerInfoPill(
+    ownerId: String,
+    ownerName: String,
+    ownerPhotoUrl: String?,
+    navController: NavController
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .height(32.dp)
+            .clip(RoundedCornerShape(50))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable {
+                navController.navigate("UserLibrary/$ownerId")
+            }
+            .padding(end = 12.dp)
+    ) {
+        AsyncImage(
+            model = ownerPhotoUrl ?: R.drawable.noimagephoto,
+            contentDescription = "Foto del dueño",
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = ownerName, style = MaterialTheme.typography.bodyMedium)
+    }
+}

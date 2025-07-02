@@ -1,6 +1,6 @@
 package com.example.satchelbooksharing.ui.satchel.ui.theme
 
-import android.os.Build
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -55,7 +55,7 @@ fun SatchelTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = SatchelTypography,
         shapes = Shapes(
             small = RoundedCornerShape(8.dp),
             medium = RoundedCornerShape(12.dp),

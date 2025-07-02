@@ -39,10 +39,14 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.satchelbooksharing.model.satchel.Message
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
+import com.example.satchelbooksharing.ui.satchel.sharedElements.OwnerInfoPill
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelWhite
+import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelYellow2
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun ChatScreen(navController: NavController, chatId: String) {
@@ -52,6 +56,8 @@ fun ChatScreen(navController: NavController, chatId: String) {
     var newMessage by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     var otherUserPhotoUrl by remember { mutableStateOf<String?>(null) }
+    var otherUserName by remember { mutableStateOf<String?>(null) }
+    var otherUserId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(chatId) {
         db.collection("chats").document(chatId).collection("messages")
@@ -68,37 +74,58 @@ fun ChatScreen(navController: NavController, chatId: String) {
     }
 
     LaunchedEffect(chatId) {
-        db.collection("chats").document(chatId).get().addOnSuccessListener { doc ->
-            val data = doc.data ?: return@addOnSuccessListener
-            val participants = data["participantIds"] as? List<*> ?: return@addOnSuccessListener
-            val otherUserId = participants.firstOrNull { it != currentUserId } as? String ?: return@addOnSuccessListener
+        val messagesSnapshot = db.collection("chats").document(chatId)
+            .collection("messages")
+            .orderBy("timestamp")
+            .get()
+            .await()
 
-            db.collection("profiles").document(otherUserId).get()
-                .addOnSuccessListener { userDoc ->
-                    otherUserPhotoUrl = userDoc.getString("photoUrl")
-                }
+        val messageDocs = messagesSnapshot.documents
+        val otherId = messageDocs.firstOrNull {
+            it.getString("senderId") != currentUserId
+        }?.getString("senderId")
+
+        if (otherId != null) {
+            otherUserId = otherId
+
+            val userDoc = db.collection("profiles").document(otherId).get().await()
+            otherUserPhotoUrl = userDoc.getString("photoUrl")
+            otherUserName = userDoc.getString("name") ?: "Usuario"
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 48.dp)) {
 
-            // Header simple debajo de la foto flotante
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Text("Chat", style = MaterialTheme.typography.titleMedium)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 48.dp)
+        ) {
+            if (otherUserId != null && otherUserName != null) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, bottom = 8.dp),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    OwnerInfoPill(
+                        ownerId = otherUserId!!,
+                        ownerName = otherUserName!!,
+                        ownerPhotoUrl = otherUserPhotoUrl,
+                        navController = navController
+                    )
+                }
             }
 
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .background(SatchelYellow2),
                 state = listState
             ) {
                 items(messages) { msg ->
@@ -109,6 +136,7 @@ fun ChatScreen(navController: NavController, chatId: String) {
                     ) {
                         Text(
                             text = msg.text,
+                            style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier
                                 .padding(4.dp)
                                 .background(
@@ -120,6 +148,7 @@ fun ChatScreen(navController: NavController, chatId: String) {
                     }
                 }
             }
+
             LaunchedEffect(messages.size) {
                 listState.animateScrollToItem(messages.size)
             }
@@ -163,21 +192,6 @@ fun ChatScreen(navController: NavController, chatId: String) {
             }
 
             Footer(navController = navController)
-        }
-
-        otherUserPhotoUrl?.let { url ->
-            AsyncImage(
-                model = url,
-                contentDescription = "Foto del otro usuario",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.TopCenter)
-                    .offset(y = (-40).dp)
-                    .border(2.dp, Color.White, CircleShape)
-                    .background(Color.Red)
-            )
         }
     }
 }

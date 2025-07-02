@@ -5,22 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,12 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.satchelbooksharing.model.satchel.Book
-import com.example.satchelbooksharing.model.satchel.Genre
-import com.example.satchelbooksharing.navigation.ScreensRoute
-import com.example.satchelbooksharing.ui.satchel.sharedElements.AppButton
 import com.example.satchelbooksharing.ui.satchel.sharedElements.BookCard
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
-import com.example.satchelbooksharing.ui.satchel.sharedElements.Header
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBodyContainer
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SearchField
 
@@ -67,9 +54,8 @@ fun SearchScreen(navController: NavController, allBooks: List<Book>) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        //Spacer(modifier = Modifier.height(12.dp))
 
-        Box(modifier = Modifier.height(60.dp)) {
+        Box(modifier = Modifier.height(62.dp)) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -88,7 +74,7 @@ fun SearchScreen(navController: NavController, allBooks: List<Book>) {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(5.dp, vertical = 12.dp)
+                .padding(5.dp, vertical = 14.dp)
         ) {
             SatchelBodyContainer {
                 if (filteredBooks.isEmpty()) {
@@ -101,7 +87,7 @@ fun SearchScreen(navController: NavController, allBooks: List<Book>) {
                         } else {
                             "Toda aventura comienza con un solo paso."
                         }
-                        Text(text = msg)
+                        Text(text = msg, style = MaterialTheme.typography.displayLarge)
                     }
                 } else {
                     LazyVerticalGrid(

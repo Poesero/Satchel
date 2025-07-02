@@ -30,6 +30,7 @@ import com.example.satchelbooksharing.data.UserRepository
 import com.example.satchelbooksharing.model.satchel.Book
 import com.example.satchelbooksharing.model.satchel.BookRequest
 import com.example.satchelbooksharing.ui.satchel.sharedElements.Footer
+import com.example.satchelbooksharing.ui.satchel.sharedElements.OwnerInfoPill
 import com.example.satchelbooksharing.ui.satchel.sharedElements.RequestToggleButton
 import com.example.satchelbooksharing.ui.satchel.sharedElements.SatchelBadge
 import com.example.satchelbooksharing.ui.satchel.ui.theme.SatchelGrey
@@ -99,7 +100,7 @@ private fun BookDetailContent(navController: NavController, book: Book) {
 
     LaunchedEffect(ownerId) {
         val url = userRepository.getOwnerPhotoUrl(ownerId)
-        Log.d("BookScreen", "URL de foto del dueño: $url")
+        //Log.d("BookScreen", "URL de foto del dueño: $url")
         ownerPhotoUrl = url
     }
 
@@ -160,8 +161,7 @@ private fun BookDetailContent(navController: NavController, book: Book) {
             ) {
                 Text(
                     text = book.description,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium
+                    fontSize = 20.sp, style = MaterialTheme.typography.bodyLarge
                 )
             }
 
@@ -285,32 +285,3 @@ private fun BookDetailContent(navController: NavController, book: Book) {
     }
 }
 
-@Composable
-fun OwnerInfoPill(
-    ownerId: String,
-    ownerName: String,
-    ownerPhotoUrl: String?,
-    navController: NavController
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .height(32.dp)
-            .clip(RoundedCornerShape(50))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable {
-                navController.navigate("UserLibrary/$ownerId")
-            }
-            .padding(end = 12.dp)
-    ) {
-        AsyncImage(
-            model = ownerPhotoUrl ?: R.drawable.noimagephoto,
-            contentDescription = "Foto del dueño",
-            modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = ownerName, style = MaterialTheme.typography.bodyMedium)
-    }
-}
